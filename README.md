@@ -1,7 +1,7 @@
 # ats_public
 Applicant tracking system
 
-# TODO
+# TODO Testing
 - Use pylint suggestions from workflow and improve the coding style in the following order:
   - imports style issues
   - module naming
