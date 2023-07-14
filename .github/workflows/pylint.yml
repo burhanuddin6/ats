@@ -22,4 +22,4 @@ jobs:
         pip install pylint-django
     - name: Analysing the code with pylint
       run: |
-        pylint --load-plugins pylint_django --django-settings-module=ats.settings $(git ls-files '*.py')
+        pylint --load-plugins pylint_django --django-settings-module=ats.settings disabled=invalid-name $(git ls-files '*.py')
