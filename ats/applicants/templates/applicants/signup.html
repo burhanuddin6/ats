@@ -1,0 +1,32 @@
+{% extends "applicants/layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block head %}
+<link href="{% static 'applicants/css/input-field.css' %}" rel="stylesheet">
+<style>
+    .button-primary{
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    
+    <form action="{% url 'applicants:signup' %}" method="POST">
+        {% csrf_token %} 
+        <div class="row">
+            {% for field in candidate_form %}
+                <div class="col-md-12">
+                    <div class="input-field-parent">
+                        <div class="input-field-label">{{ field.label }}</div>
+                        {{ field|add_class:"input-field" }}
+                    </div>
+                </div>
+            {% endfor %}
+            
+        </div>
+        <input type="submit" value="Next" name="candidate_form" class="button-primary">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "recruiters/layout.html" %}
+{% load static %}
+
+{% block head %}
+    <link href="{% static 'recruiters/styles-job.css' %}" rel="stylesheet">
+    <link href="{% static 'recruiters/styles-candidates.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block head_content %}
+  <div style="height: 100px;">
+    <a href="{% url 'recruiters:create_job' %}">
+      <button class="button" id="post-job">Post Job</button>
+    </a>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <ul>
+      <div class="container">
+
+          {% for job in jobs %}
+              {% if forloop.counter0|divisibleby:3 %} <div class="row z-center cards"> {%  endif %}
+                  <div class="col-md-4">
+                      <div class="card-parent">
+                          <a href="{% url 'recruiters:job' job.id %}">
+                              <div class="card" id="cardContainer">
+                                  <img class="card-child" alt="" src="{% static 'recruiters/icon-candidates.png' %}" />
+                        
+                                  <div class="card-text-container">
+                                    <div class="card-title-parent">
+                                      <div class="card-title">
+                                        {{ job.title }}
+                                      </div>
+                                      <div class="card-description">
+                                        {{ job.description | slice:":180"}}...
+                                      </div>
+                                    </div>
+                                    <div class="card-price-tag">
+                                      {{ job.salary_Range }}
+                                    </div>
+                                  </div> <!-- card-text-container -->
+                              </div> <!-- card -->
+                          </a> 
+                      </div> <!-- card-parent -->
+                  </div> <!-- col-md-4 -->
+              {%  if forloop.counter|divisibleby:3 or forloop.last %}</div><!-- row closing --><hr>{%  endif %}
+          {% endfor %}
+      </div> <!-- container -->
+  </ul>
+{% endblock %}

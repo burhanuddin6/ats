@@ -1,0 +1,215 @@
+body {
+    margin: 0;
+    line-height: normal;
+  }
+  
+  :root {
+    /* fonts */
+    --text-s-regular: 400 12px/16px var(--font-poppins);
+    --font-poppins: Poppins;
+    --font-inter: Inter;
+
+  
+    /* font sizes */
+    --text-s-regular-size: 12px;
+    --text-l-regular-size: 16px;
+    --heading-s-size: 20px;
+  
+    /* Colors */
+    --neutral-10: #fff;
+    --neutral-70: #757575;
+    --neutral-100: #0a0a0a;
+    --neutral-80: #616161;
+    --primary-color: #f16825;
+    /* Colors */
+    --fadetext: #757575;
+    --t1: rgba(0, 0, 0, 0.2);
+  
+    /* Gaps */
+    --gap-base: 16px;
+    --gap-5xs: 8px;
+  
+    /* Paddings */
+    --padding-5xl: 24px;
+  
+    /* border radiuses */
+    --br-6xl: 24px;
+    --br-7xs: 6px;
+  
+    /* Effects */
+    --shadow-1: 0px 1px 2px rgba(0, 0, 0, 0.12);
+
+    /* button widths fill contents*/
+    --btn-width: 100%;
+    
+  }
+  
+.search-jobs {
+    position: absolute;
+    top: 9.13%;
+    left: 9.9%;
+    line-height: 135.5%;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+/* Job Card */
+  .card-child {
+    align-self: stretch;
+    position: relative;
+    border-radius: var(--br-7xs) var(--br-7xs) 0 0;
+    max-width: 100%;
+    overflow: hidden;
+    height: 200px;
+    flex-shrink: 0;
+    object-fit: cover;
+  }
+  .card-title{
+    align-self: stretch;
+    position: relative;
+    letter-spacing: -0.02em;
+    line-height: 28px;
+    font-weight: 500;
+  }
+  .card-description {
+    align-self: stretch;
+    position: relative;
+    font-size: var(--text-l-regular-size);
+    letter-spacing: -0.01em;
+    line-height: 24px;
+    color: var(--neutral-80);
+  }
+  .card-title-parent {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--gap-5xs);
+  }
+  .card-price-tag {
+    align-self: stretch;
+    position: relative;
+    font-size: var(--text-s-regular-size);
+    line-height: 16px;
+    color: var(--neutral-70);
+    padding: 10px 0 0 0;
+    text-align: left;
+  }
+  .card.card-text-container {
+    border-radius: var(--br-7xs);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .card-text-container {
+    align-self: stretch;
+    background-color: var(--neutral-10);
+    padding: var(--padding-5xl);
+    gap: var(--gap-base);
+  }
+  .card{
+    position: absolute;
+    height: 470px;
+    width: 300px;
+    top: 5.4%;
+    bottom: 54.55%;
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--neutral-70);
+    box-sizing: border-box;
+  }
+  .card {
+    right: 66.16%;
+    left: 14.29%;
+    cursor: pointer;
+    text-align: left;
+  }
+.card-parent {
+    position: relative;
+    /* height: 104.39%;
+    width: 83.45%;
+    top: 19.52%;
+    right: 8.39%;
+    bottom: -23.9%;
+    left: 8.16%;  */
+    /* overflow-y: auto; */
+    font-size: var(--heading-s-size);
+    color: var(--neutral-100);
+    font-family: var(--text-s-regular);
+  }
+/* ************************************* */
+  .macbook-pro-16-2 {
+    position: relative;
+    background-color: var(--neutral-10);
+    width: 100%;
+    height: 1117px;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 46px;
+    color: var(--primary-color);
+    font-family: var(--font-poppins);
+  }
+
+/* ***************** */
+.row.cards{
+  height: 500px;
+}
+/* post job button */
+
+
+
+.input-field-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: 27px;
+  flex-shrink: 0;
+}
+.input-field {
+  border-radius: 10px;
+  border: 1px solid var(--t1);
+  width: 100%;
+  height: 40px;
+  flex-direction: row;
+  padding: 10px 23px;
+  align-items: center;
+  font-size: 16px;
+}
+.input-field-parent {
+  display: flex;
+  box-sizing: border-box;
+  justify-content: flex-start;
+  position: relative;
+  width: 350px;
+  flex-direction: column;
+  padding: 2px 0 0 0;
+  align-items: flex-start;
+  text-align: left;
+  font-size: 12px;
+  color: #565656;
+  margin: 0 0 20px 0;
+}
+
+.input-field.Textarea{
+  height: 200px;
+  width: 450px;
+}
+
+.input-field-parent.small{
+  width: 200px;
+}
+
+.inactive-input{
+  border: 1px solid #d8d8d8;
+  background-color: #f2f2f2;
+  
+}
+
+
+@media only screen and (max-width: 500px) {
+  .input-field-parent{
+    width: 250px;
+  }
+}

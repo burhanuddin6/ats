@@ -1,0 +1,134 @@
+.rectangle-parent {
+    position: relative;
+    top: 43px;
+    left: 82px;
+    width: auto;
+    height: auto;
+    cursor: pointer;
+    border-radius: var(--br-sm);
+    background-color: var(--t2);
+}
+
+text-wrapper{
+    position: absolute;
+    /* make it aside of the image icon */
+    top: 20px;
+    left: 94px;
+    width: 120px;
+    height:100px;
+}
+.name{
+    position: absolute;
+    top: 20px;
+    left: 94px;
+    line-height: 135.5%;
+    width: 66%;
+    height: 30px;
+    font-size: 18x;
+    /* thicken font */
+    font-weight: 700;
+}
+.applied-on {
+    font-size: var(--text-s-regular-size);
+    font-weight: 400;
+}
+
+.line {
+    position: relative;
+    box-shadow: 0 4px 4px rgba(86, 86, 86, 0.5);
+    border-top: 1px solid var(--color-gray-100);
+    box-sizing: border-box;
+    width: 100%;
+    height: 1px;
+}
+
+.ellipse-icon {
+    position: absolute;
+    top: 13px;
+    left: 15px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--t1);
+}
+
+.candidate-top{
+    position: relative;
+    width: 100%;
+    height: 80px;
+}
+
+.above-line{
+    position: relative;
+  width: 100%;
+  padding: 10px 10px;
+  height: auto;
+  /* center contents vertically */
+  display: flex;
+  flex-direction: column;
+  justify-content: right;
+  gap: var(--gap-base);
+
+}
+
+.below-line{
+    position: relative;
+    width: 100%;
+    padding: 10px 15px;
+    /* top and bottom margin */
+    margin: 10px 0;
+    height: auto;
+    /* center contents vertically */
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: var(--gap-base);
+    text-align: center;
+
+}
+
+.icon{
+  width: 24px;
+  height: 24px;
+}
+.resume {
+  font-size: 16px;
+}
+
+.dots{
+    position: absolute;
+    top:15px;
+    right:10px;
+  }
+
+.candidate-box{
+    width: 400px;
+    height:auto;
+    padding: auto;
+    margin-bottom: 50px;
+    margin-right: 50px;
+}
+.container.candidates{
+    width:auto;
+}
+.image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn.approve,
+.btn.reject,
+.btn.schedule{
+    text-align: center;
+    border: 1px solid black;
+}
+.btn.approve:hover{
+    border: 1px solid green;
+    color: green;
+}
+.btn.reject:hover{
+    border: 1px solid red;
+    color: red;
+}

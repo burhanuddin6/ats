@@ -1,0 +1,29 @@
+{% extends "applicants/layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block head %}
+<link href="{% static 'applicants/css/input-field.css' %}" rel="stylesheet">
+<style>
+    .button-primary{
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    
+    <form action="{% url 'applicants:verify' %}" method="POST" class="container">
+        {% csrf_token %} 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-field-parent">
+                    <div class="input-field-label">Verification Code</div>
+                    {{ verify_form.verification_code|add_class:"input-field" }}
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Verify" class="button-primary">
+    </form>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "recruiters/layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load mytags %}
+
+{% block head %}
+    <link href="{% static 'recruiters/styles-job.css' %}" rel="stylesheet">
+    <link href="{% static 'recruiters/styles-candidates.css' %}" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+    <!-- INTERVIEW STAGE FORM (hidden) -->
+    <form action="{% url 'recruiters:create_stage' job.id 'interview' %}" method="POST">
+        {% csrf_token %}
+        {% if stage_form.errors %}
+            <div class="alert alert-danger">
+                <strong>Oops! We got the following errors:</strong>
+                <ul>
+                    {% for field in stage_form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    {% for error in stage_form.non_field_errors %}
+                    <li>
+                        {{ error|escape }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        {% for field in stage_form %}
+            {% in_str field.name "start_Date" "end_Date" "duration" "min_Gap_Between" as small_input %}
+            {% if field.name == "description" %}
+                <div class="input-field-parent">
+                    <div class="input-field-label">{{ field.label }}</div>
+                    {{ field|add_class:"input-field Textarea" }}
+                </div>
+            {% elif small_input %}
+                <div class="input-field-parent small">
+                    <div class="input-field-label">{{ field.label }}</div>
+                    {{ field|add_class:"input-field" }}
+                </div>
+            {% else %}
+                <div class="input-field-parent">
+                    <div class="input-field-label">{{ field.label }}</div>
+                    {{ field|add_class:"input-field" }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div style="width: 100%; text-align: center; height:100px">
+            <button type="submit" class="button" id="job-form-submit">Submit</button>
+        </div>
+    </form>
+{% endblock %}

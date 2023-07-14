@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link href="{% static 'recruiters/styles.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Welcome to JBS Catalyst</h1>
+    <form action="{% url 'recruiters:login' %}" method="POST">
+        {% csrf_token %}
+        <div>
+            <i class="fas fa-user" style="font-size: 24px;"></i>
+            <label for="id_username">Username:</label>
+            {{ login_form.username }}
+        </div>
+        <div>
+            <i class="fas fa-lock" style="font-size: 24px;"></i>
+            <label for="id_password">Password:</label>
+            {{ login_form.password }}
+        </div>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>

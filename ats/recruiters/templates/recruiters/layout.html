@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" integrity="sha384-PJsj/BTMqILvmcej7ulplguok8ag4xFTPryRq8xevL7eBYSmpXKcbNVuy+P0RMgq" crossorigin="anonymous">
+    <link href="{% static 'recruiters/styles.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script rel="javascript" type="text/javascript" src="{% static 'recruiters/js/ajax.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+
+    {% block head %}
+    {% endblock %}
+</head>
+
+<body>
+    <div class="heading">
+        <h1>
+            {{ heading }}
+        </h1>
+    </div>
+    <div class="topnav">
+        <a href="#home">
+            <img src="{% static 'recruiters/icon-back-dashboard.svg' %}">
+            <input type=button value="Back" onClick="javascript:history.go(-1);">
+        </a>
+        <div class="topnav-right">
+            <a>What are you looking for?</a>
+          <a href="#search"><img src="{% static 'recruiters/icon-search-dashboard.svg' %}"></a>
+          <a href="#notif"><img src="{% static 'recruiters/icon-bell-dashboard.svg' %}"></a>
+          <a href="{% url 'recruiters:logout' %}">Logout</a>
+        </div>
+    </div>
+
+    
+
+    <!-- Sidebar -->
+    <div class="sidenav">
+        <div style = "position:absolute; left:40px; top:10px">
+            <img src="https://jbs.live/wp-content/uploads/2022/01/jbs_logo-1.webp" alt="Logo" width="70" height="60" class="d-inline-block align-text-top">
+        </div>
+        <a href="#about">
+            General
+            <button type="button" class="btn sidebar" style="top:160px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-dashboard.svg' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100"> 
+                Dashboard
+            </button></font></font>
+        
+            <button type="button" class="btn sidebar" style="top:200px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-chat.svg' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100">   
+                Chat
+            </button></font></font>
+            
+            <button type="button" class="btn sidebar" style="top:240px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-calendar.svg' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100">   
+                Calendar
+            </button></font></font>
+
+        </a>
+
+        <a href="#services">
+            Recruitment
+            <button type="button" class="btn sidebar" style="top:325px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-jobs.svg' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100">   
+                Jobs
+            </button></font></font>
+            
+            <button type="button" class="btn sidebar" style="top:365px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-candidates.png' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100">   
+                Candidates
+            </button></font></font>
+            
+            <button type="button" class="btn sidebar" style="top:405px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-careersite.svg' %}" alt="Dashboard Logo" width="20" height="20" class="button-icon-100">   
+                Career Site
+            </button></font></font>
+        </a>
+        <a href="#clients">Company
+            <button type="button" class="btn sidebar" style="top:495px;"><font color = "white"><font size = 2.5>
+                <img src="{% static 'recruiters/icon-team.svg' %}" alt="Dashboard Logo" width="24" height="15" class="button-icon-100">   
+                Team
+            </button></font></font>
+        </a>
+        <!-- Help Centre-->
+        <div style = "position:absolute; left:65px; top:95%">
+          <img src="{% static 'recruiters/icon-settings.svg' %}" alt="Dashboard Logo" width="25" height="25" class="button-icon-100">   
+        </div>
+      </div>
+    
+      
+    <div class="content">
+        <div id="user-messages" data-url="{% url 'recruiters:messages' %}">
+            {% include 'recruiters/div_messages.html' %}
+        </div>
+        {% block head_content %}
+        {% endblock %}
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script>ajaxCall()</script>
+</body>
+</html>

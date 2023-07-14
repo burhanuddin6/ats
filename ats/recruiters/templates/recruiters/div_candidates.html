@@ -1,0 +1,33 @@
+{% load static %}
+{% load mytags %}
+<div class="row">
+    {% for candidate in candidates %}
+        <div class="col-md-4 candidate-box">
+            <div class="rectangle-parent" id="groupContainer">        
+                <div class="candidate-top">
+                    <div class="ellipse-icon">
+                        <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+                    </div>
+                    <div class="name">
+                        <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
+                        <div class="applied-on">Appplied On 2nd June</div>
+                    </div>
+                    <div class="icon dots">
+                        <img alt="" src="{% static 'recruiters/icon-h-dots.svg' %}" />
+                    </div>
+                </div>
+                
+                <div class="above-line">
+                </div>
+                
+                <div class="line"></div>
+                
+                <div class="below-line">
+                    <a class="resume" href="{% get_candidate_resume_src candidate.candidate_ID %}">Resume</a>
+                    <img class="email icon" id="email-candidate" alt="" src="{% static 'recruiters/icon-email.svg' %}" />
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+</div>
