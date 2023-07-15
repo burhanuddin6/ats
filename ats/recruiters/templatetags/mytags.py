@@ -1,5 +1,8 @@
 from django import template
 from django.conf import settings
+
+from applicants import models as a_models
+
 register = template.Library()
 
 
@@ -29,9 +32,8 @@ def get_item(dictionary, key):
 
 @register.simple_tag(name='get_candidate_img_src')
 def get_candidate_img_src(candidate_ID):
-    from applicants.models import Candidate, Profile
-    candidate = Candidate.objects.get(candidate_ID=candidate_ID)
-    file_name = Profile.objects.get(id=candidate.candidate_application.profile.id).photo_File_Name
+    candidate_application = a_models.Candidate_Application.objects.get(candidate_ID=candidate_ID)
+    file_name = a_models.Profile.objects.get(id=candidate_application.profile.id).photo_File_Name
     
     if file_name is None:
         file_name = ''

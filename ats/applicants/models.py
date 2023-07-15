@@ -1,48 +1,41 @@
-from typing import Any
+import datetime
+
 from django.db import models
 from django.core.exceptions import ValidationError
-# Create your models here.
-from django.db import models
-import datetime
-from django.contrib.auth.models import User 
-from . import email
-from django.conf import settings
+from django.contrib.auth.models import User
 from django.utils import timezone
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericRelation
+from django.core.validators import URLValidator
+
+from polymorphic.models import PolymorphicModel
 
 def is_recruiter(user_id):
+    """Checks whether a the user is in the Recruiters group
+
+    Args:
+        user_id (int): the pk of the user (Django User model)
+
+    Raises:
+        ValidationError: The user is not in the Recruiters group
+    """
     user = User.objects.get(pk=user_id)
-    a = user.groups.filter(name='Recruiters').exists()
-    if not a:
+    boolean = user.groups.filter(name='Recruiters').exists()
+    if not boolean:
         raise ValidationError("User is not a recruiter")
-# Create your models here.
 
 
-# ########################################################################################
-
-# class Graduate_Fields(models.Model):
-#     feild_Name = models.CharField(
-#         verbose_name="Feild Name",
-#         max_length=128,
-#         db_index=False,
-#         # validators=[(lambda x: len(x) <= 128), (lambda x: x.isalpha())]
-#     )
-
-# ########################################################################################
-
-# class Skills(models.Model):
-#     skill_Name = models.CharField(
-#         verbose_name="Skill Name",
-#         max_length=128,
-#         db_index=False,
-#         # validators=[(lambda x: len(x) <= 128), (lambda x: x.isalpha())]
-#     )
-
-########################################################################################
 
 class Candidate(models.Model):
+    """Candidate Model for the ATS app
+    A user is a candidate only if they have an entry in this table
+    A candidate also has a single candidate_application
+
+    TODO: Add tests for this model
+
+    Args:
+        Does not have an overriden __init__ method
+        Uses the default __init__ method
+    
+    """
     candidate_ID = models.CharField(
         verbose_name="64-character Random ID string for Candidates",
         primary_key=True,
@@ -73,19 +66,40 @@ class Candidate(models.Model):
 
     def __str__(self):
         return f"{self.first_Name} {self.last_Name}({self.candidate_ID})"
-    
+
     def get_interview_datetime(self, stage_id):
+        """_summary_
+
+        Args:
+            stage_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self.interviews.get(interview_ID=stage_id).get_interview_datetime()
 
     def get_interview_schedule_opt(self, stage_id):
+        """_summary_
+
+        Args:
+            stage_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return self.interviews.get(interview_ID=stage_id).get_schedule_option()
     
     def is_scheduled(self, stage_id):
+        """_summary_
+        """
         return self.interviews.get(interview_ID=stage_id).is_scheduled()
 
 ########################################################################################
 
 class Recruiter(models.Model):
+    """ Recruiter Model for the ATS app
+    Different than the Recruiter Group. But Each Recruiter is a member of the Recruiter Group
+    """
     user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE,
@@ -114,6 +128,7 @@ class Recruiter(models.Model):
 ########################################################################################
 
 class Job(models.Model):
+    """Job Model for the ATS app"""
     title = models.CharField(
         verbose_name="Job Title",
         max_length=128,
@@ -210,6 +225,10 @@ class Job(models.Model):
 
 
 class Profile(models.Model):
+    """Candidate Profile is stored in this model
+    Profile stores secondary data of the candidate
+    Related to Candidate_Application model
+    """
     national_ID = models.CharField(
         verbose_name="National ID Card Number",
         max_length=13,
@@ -242,6 +261,11 @@ class Profile(models.Model):
 ##########################################################################################
 
 class Education(models.Model):
+    """Candidate Education Model
+    Related to Candidate_Application model
+    TODO: Make this model one to many with Candidate_Application
+
+    """
     BACHELORS = 'B'
     MASTERS = 'M'
     PHD = 'P'
@@ -276,6 +300,11 @@ class Education(models.Model):
 #########################################################################p###############
 
 class Skill(models.Model):
+    """Candidate Skills Model
+    Related to Candidate_Application model
+    TODO: Make this model many to one with Candidate_Application
+    Candidate_Application can have multiple skills
+    """
     skill_Name = models.CharField(
         verbose_name="Skill Name",
         max_length=128,
@@ -295,6 +324,12 @@ class Skill(models.Model):
 ### Candidate Previous Job Experience - Can be blank or single entry ###
 
 class Experience(models.Model):
+    """
+    Candidate Previous Job Experience Model
+    Related to Candidate_Application model
+    TODO: Make this model many to one with Candidate_Application
+    Candidate_Application can have multiple experiences
+    """
     company_Name = models.CharField(
         verbose_name="Company Name",
         max_length=128,
@@ -341,16 +376,28 @@ class Experience(models.Model):
         db_index=False,
     )
 
-from django.core.validators import URLValidator
+########################################################################################
 
 class OptionalSchemeURLValidator(URLValidator):
+    """URL Validator that allows URLs without a scheme
+    """
     def __call__(self, value):
         if '://' not in value:
             # Validate as if it were https:// because these are known websites
             value = 'https://' + value
-        super(OptionalSchemeURLValidator, self).__call__(value)
+        super().__call__(value)
 
 class Platform(models.Model):
+    """Platforms defined by recruiters such as different profile websites such as LinkedIn, etc.
+    Related to Reference model
+    One to many relationship with Reference model
+
+    Args:
+        models (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     name = models.CharField(
         verbose_name="Platform Name",
         max_length=128,
@@ -363,9 +410,16 @@ class Platform(models.Model):
         validators=[OptionalSchemeURLValidator()],
     )
     def __str__(self):
-        return f"{self.name.capitalize()}"
+        return f"{str(self.name).capitalize()}"
+
+########################################################################################
 
 class Reference(models.Model):
+    """
+    Candidate References Model
+    Related to Candidate_Application model
+    Candidate_Application can have multiple references
+    TODO: Make this model many to one with Candidate_Application by adding a foreign key"""
     # queryset choices for name
     platform_ID = models.ForeignKey(
         to=Platform,
@@ -381,10 +435,16 @@ class Reference(models.Model):
     )
 
 
-    
-    
-from polymorphic.models import PolymorphicModel
 class Base_Job_Stage(PolymorphicModel):
+    """
+    Base Job Stage Model
+    Related to Job model
+    Many to One Relationship with Job model
+    Job Stages can have three types:
+        1. Application
+        2. Interview
+        3. Test
+    """
     name = models.CharField(
         verbose_name="Job Stage Name",
         max_length=128,
@@ -434,21 +494,30 @@ class Base_Job_Stage(PolymorphicModel):
 
     @property
     def is_past(self):
+        """ Returns True if the job stage is in the past """
         return self.end_Date > datetime.date.today()
     @property
     def is_current(self):
+        """ Returns True if the job stage is in the present"""
         return self.start_Date <= datetime.date.today() <= self.end_Date
     @property
     def is_future(self):
+        """ Returns True if the job stage is in the future"""
         return self.start_Date > datetime.date.today()
-    
+
+
 class Application(Base_Job_Stage):
+    """ Application Stage Model for Jobs 
+    Related to Job model by one-to-one relationship. Each job must have an application stage
+    Related to Candidate_Application model by one-to-many relationship. 
+    Each application stage can have multiple candidate applications"""
     class Meta:
         ordering = ['job_ID','start_Date', 'end_Date']
         verbose_name = "Application Stage For Jobs"
         verbose_name_plural = "Application Stages For Jobs"
 
 class Interview(Base_Job_Stage):
+    """ Interview Stage Model for Jobs """
     ONLINE = 'O'
     IN_PERSON = 'I'
     INTERVIEW_TYPE_CHOICES = [
@@ -470,35 +539,12 @@ class Interview(Base_Job_Stage):
         verbose_name = "Interview Stage For Jobs"
         verbose_name_plural = "Interview Stages For Jobs"
 
-    def create_interview_slots(self, N):
-        temp = Interview_Daily_TimeFrame.objects.filter(interview_ID=self.id)
-        timeframes = {
-            'monday': temp.get(day='M', interview_ID=self.id),
-            'tuesday': temp.get(day='T', interview_ID=self.id),
-            'wednesday': temp.get(day='W', interview_ID=self.id),
-            'thursday': temp.get(day='H', interview_ID=self.id),
-            'friday': temp.get(day='F', interview_ID=self.id),
-            'saturday': temp.get(day='S', interview_ID=self.id),
-            'sunday': temp.get(day='U', interview_ID=self.id)
-        }
-        duration = self.duration
-        gap = self.min_Gap_Between
-        date = self.start_Date
-        slots = []
-        while N > 0:
-            for day in timeframes:
-                start = timeframes[day].start_Time
-                end = timeframes[day].end_Time
-                while start + datetime.timedelta(minutes=duration) <= end:
-                    slots.append({'start': start, 'end': start + datetime.timedelta(minutes=duration), 'date': date, 'day': day})
-                    start += datetime.timedelta(minutes=duration + gap)
-                    N -= 1
-                    if N <= 0:
-                        break
-                date += datetime.timedelta(days=1)  
-        return slots
 
 class Slot_Group(models.Model):
+    """ Slot Group Model for Interviews
+    Each Interview can have a slot group. Slot groups are created by recruiters 
+    and are used to automate the interview slot creation process
+    """
     interviewer_ID = models.ForeignKey(
         to=Recruiter,
         on_delete=models.CASCADE,
@@ -526,6 +572,38 @@ class Slot_Group(models.Model):
         db_index=False,
         default= 10,
     )
+    def create_interview_slots(self, NUMBER):
+        """ Creates NUMBER interview slots for the slot group
+        NUMBER: NUMBERumber of slots to be created
+        
+        Returns a list of interview slots"""
+        temp = Interview_Daily_TimeFrame.objects.filter(slot_Group_ID=self)
+        print(temp)
+        timeframes = {
+            'monday': temp.filter(day='M').first(),
+            'tuesday': temp.filter(day='T').first(),
+            'wednesday': temp.filter(day='W').first(),
+            'thursday': temp.filter(day='H').first(),
+            'friday': temp.filter(day='F').first(),
+            'saturday': temp.filter(day='S').first(),
+            'sunday': temp.filter(day='U').first(),
+        }
+        duration = self.interview_ID.duration
+        gap = self.min_Gap_Between
+        date = self.start_Date
+        slots = []
+        while NUMBER > 0:
+            for day in timeframes:
+                start = timeframes[day].start_Time
+                end = timeframes[day].end_Time
+                while start + datetime.timedelta(minutes=duration) <= end:
+                    slots.append({'start': start, 'end': start + datetime.timedelta(minutes=duration), 'date': date, 'day': day})
+                    start += datetime.timedelta(minutes=duration + gap)
+                    NUMBER -= 1
+                    if NUMBER <= 0:
+                        break
+                date += datetime.timedelta(days=1)  
+        return slots
 
 class Interview_Daily_TimeFrame(models.Model):
     slot_Group_ID = models.ForeignKey(
@@ -571,6 +649,12 @@ class Interview_Daily_TimeFrame(models.Model):
     )    
 
 class Interview_Slot(models.Model):
+    """ Interview Slot Model for Interviews
+    An interview slot contains the details of a single interview slot
+    If the slot is taken, vacant is set to True
+    This model is related to Candidate_Interview model through a one-to-one relationship
+    TODO: Add a one-to-one relationship with Candidate_Interview model instead of foreing key
+    """
     slot_Group_ID = models.ForeignKey(
         to=Slot_Group,
         on_delete=models.CASCADE,
@@ -596,6 +680,9 @@ class Interview_Slot(models.Model):
     )
 
 class Test(Base_Job_Stage):
+    """ Test Model for Jobs
+    Test Stage for a job. A job can have zero, one or more test stages
+    """
     duration = models.IntegerField(
         verbose_name="Test Duration in Minutes",
         db_index=False,
@@ -621,6 +708,7 @@ class Test(Base_Job_Stage):
 
 
 class Candidate_Application(models.Model):
+    """ Candidate Application Model for Applications"""
     application_ID = models.ForeignKey(
         to=Application,
         on_delete=models.CASCADE,
@@ -681,6 +769,7 @@ class Candidate_Application(models.Model):
         return f"(Application:{self.application_ID}, Candidate:{self.candidate_ID})"
 
 class Candidate_Test(models.Model):
+    """ Candidate Test Model for Tests"""
     test_ID = models.ForeignKey(
         to=Test,
         on_delete=models.CASCADE,
@@ -708,54 +797,62 @@ class Candidate_Test(models.Model):
         db_index=False,
     )
     def __str__(self):
-        return f"(Test:{self.test_Process_ID} ---for--> Candidate: {str(self.candidate_ID)})"
+        return f"(Test:{self.test_ID} ---for--> Candidate: {str(self.candidate_ID)})"
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-        self.__original_status = self.status
+    # def __init__(self, *args: Any, **kwargs: Any) -> None:
+    #     super().__init__(*args, **kwargs)
+    #     self.__original_status = self.status
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        self.notify_candidate()
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.notify_candidate()
 
-    def notify_candidate(self):
-        salutation = "Dear " + self.candidate_ID.first_Name + ","
-        message, subject = '', ''
-        if self.status != self.__original_status:
-            if self.status == self.ACCEPTED:
-                message = f"Congratulations! You have passed the test {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.title}." +\
-                f"Please stay tuned for the next steps.\n" +\
-                f"We wish you all the best for the remaining steps.\n"
-            elif self.status == self.REJECTED:
-                message = f"We are sorry to tell you that you did not pass {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.job_Name}." +\
-                    "We hope that this was a good evaluative experience for you. We wish you all the best for your future endeavors.\n" +\
-                    "Please feel free to apply for other jobs on our portal."
-            subject = f"Test Result: {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.job_Name}"
-        else:
-            subject = "Test for the job {self.test_Process_ID.job_ID.job_Name}"
-            message = "You need to take the test for the job application: {self.test_Process_ID.job_ID.job_Name}.\n" +\
-                f"Test Name: {self.test_Process_ID.test_Name}\n" +\
-                f"Test Description: {self.test_Process_ID.test_Description}\n" +\
-                f"Test Duration: {self.test_Process_ID.test_Duration} minutes\n" +\
-                f"Test Start Date: {self.test_Process_ID.test_Start_Date}\n" +\
-                f"Test End Date: {self.test_Process_ID.test_End_Date}\n" +\
-                "Please make sure that you take the test on time. The test can be taken only once.\n" +\
-                "We wish you all the best for the test.\n"
-        ending = "\nRegards,\n JBS Recruitment Team" +\
-            "\n\nThis is an auto-generated email. Please do not reply to this email." +\
-            "\nFor any queries, please contact {self.test_Process_ID.job_ID.recruiter_ID.email_ID}"
-        message = salutation + "\n\n" + message + ending
-        if subject:
-            email.send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[self.candidate_ID.user.email],
-                fail_silently=False,
-            )
+    # def notify_candidate(self):
+    #     salutation = "Dear " + self.candidate_ID.first_Name + ","
+    #     message, subject = '', ''
+    #     if self.status != self.__original_status:
+    #         if self.status == self.ACCEPTED:
+    #             message = f"Congratulations! You have passed the test {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.title}." +\
+    #             "Please stay tuned for the next steps.\n" +\
+    #             "We wish you all the best for the remaining steps.\n"
+    #         elif self.status == self.REJECTED:
+    #             message = f"We are sorry to tell you that you did not pass {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.job_Name}." +\
+    #                 "We hope that this was a good evaluative experience for you. We wish you all the best for your future endeavors.\n" +\
+    #                 "Please feel free to apply for other jobs on our portal."
+    #         subject = f"Test Result: {self.test_Process_ID.test_Name} for the job {self.test_Process_ID.job_ID.job_Name}"
+    #     else:
+    #         subject = "Test for the job {self.test_Process_ID.job_ID.job_Name}"
+    #         message = "You need to take the test for the job application: {self.test_Process_ID.job_ID.job_Name}.\n" +\
+    #             f"Test Name: {self.test_Process_ID.test_Name}\n" +\
+    #             f"Test Description: {self.test_Process_ID.test_Description}\n" +\
+    #             f"Test Duration: {self.test_Process_ID.test_Duration} minutes\n" +\
+    #             f"Test Start Date: {self.test_Process_ID.test_Start_Date}\n" +\
+    #             f"Test End Date: {self.test_Process_ID.test_End_Date}\n" +\
+    #             "Please make sure that you take the test on time. The test can be taken only once.\n" +\
+    #             "We wish you all the best for the test.\n"
+    #     ending = "\nRegards,\n JBS Recruitment Team" +\
+    #         "\n\nThis is an auto-generated email. Please do not reply to this email." +\
+    #         "\nFor any queries, please contact {self.test_Process_ID.job_ID.recruiter_ID.email_ID}"
+    #     message = salutation + "\n\n" + message + ending
+    #     if subject:
+    #         email.send_mail(
+    #             subject=subject,
+    #             message=message,
+    #             from_email=settings.EMAIL_HOST_USER,
+    #             recipient_list=[self.candidate_ID.user.email],
+    #             fail_silently=False,
+    #         )
 
 
 class Candidate_Interview(models.Model):
+    """_summary_
+
+    Args:
+        models (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     interview_ID = models.ForeignKey(
         to=Interview,
         on_delete=models.CASCADE,
@@ -805,24 +902,36 @@ class Candidate_Interview(models.Model):
     #     self.__original_details = {}
     
     def get_schedule_option(self):
+        """Used in template to render a button name to schedule or reschedule interview"""
         if self.interview_Slot_ID is not None:
             return "Reschedule"
         return "Schedule"
     
     def is_interview_done(self):
+        """ Check whethere the candidate's interview date has passed or not
+        If candidate does not have an interview date, return False
+        Else return whether the interview date has passed or not
+
+        Returns: boolean value
+        """
         if self.interview_Slot_ID is None:
             return False
         return self.interview_Slot_ID.datetime_Of_Interview < timezone.now()
     
     def is_scheduled(self):
+        """ Returns false if the candidate has not been scheduled for an interview
+        that is if there is no interview slot associate with the candidate"""
         return self.interview_Slot_ID is not None
 
     def get_interviewer(self):
+        """Return interviewer name if the candidate has been scheduled for an interview
+        Return empty string if the candidate has not been scheduled for an interview"""
         if self.interview_Slot_ID is None:
             return ""
         return str(self.interview_Slot_ID.slot_Group_ID.interviewer_ID)
     
     def get_interview_datetime(self):
+        """Return interview datetime if the candidate has been scheduled for an interview"""
         if self.interview_Slot_ID is None:
             return "Not Scheduled"
         return str(self.interview_Slot_ID.datetime_Of_Interview)
@@ -877,5 +986,3 @@ class Candidate_Interview(models.Model):
     #             to_email=[self.candidate_ID.user.email,],
     #             fail_silently=False,
     #         )
-
-
