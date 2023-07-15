@@ -1,14 +1,13 @@
-from typing import Any, Dict
 from django import forms
-from .models import *
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+
+from . import models as a_models
 #import settings
 
-def check_file_name_size(file_obj, size_limit, rename=False, rename_to=''): 
+def check_file_name_size(file_obj, size_limit, rename=False, rename_to=''):
     file_name = file_obj.name.split('.')
-    name = file_name[:-1]
     ext = file_name[-1]
     if file_obj.size > size_limit:
         raise ValueError("File exceeds size limit")
@@ -60,7 +59,7 @@ class CandidateEmailForm(forms.Form):
         required=True,
         max_length=254,
     )
-    def clean_email(self) -> Dict[str, Any]:
+    def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Email already registered")
@@ -111,7 +110,7 @@ class CandidateForm(forms.ModelForm):
         max_length=254,
     )
     class Meta:
-        model = Candidate
+        model = a_models.Candidate
         exclude = ['candidate_ID','created_At', 'user']
     
     def normalize(self):
@@ -156,7 +155,7 @@ class CandidateProfileForm(forms.ModelForm):
         required=True,
     )
     class Meta:
-        model = Profile
+        model = a_models.Profile
         exclude = ['photo_File_Name', 'resume_File_Name']
         widgets = {
             'date_Of_Birth': forms.DateInput(attrs={'type': 'date'}),
@@ -178,7 +177,7 @@ class CandidateProfileForm(forms.ModelForm):
 
 class CandidateEducationForm(forms.ModelForm):
     class Meta:
-        model = Education
+        model = a_models.Education
         exclude = ['application_ID']
         widgets = {
             'ed_Level': forms.Select(attrs={'class': 'form-control'}),
@@ -197,7 +196,7 @@ class CandidateSkillsForm(forms.ModelForm):
         ),
     )
     class Meta:
-        model = Skill
+        model = a_models.Skill
         exclude = ['application_ID', 'certificate_File_Name']
     def clean_certificate(self):
         certificate = self.cleaned_data.get("certificate")
@@ -206,7 +205,7 @@ class CandidateSkillsForm(forms.ModelForm):
         return certificate
 
 CandidateSkillsFormSet = forms.modelformset_factory(
-    model=Skill,
+    model=a_models.Skill,
     form=CandidateSkillsForm,
     extra=1,
     can_delete=True,
@@ -224,7 +223,7 @@ class CandidateExperienceForm(forms.ModelForm):
         )
     )
     class Meta:
-        model = Experience
+        model = a_models.Experience
         exclude = ['application_ID','job_Slip_File_Name']
         widgets = {
             'start_Date': forms.DateInput(attrs={'type': 'date'}),
@@ -287,7 +286,7 @@ class CandidateDocumentsForm(forms.Form):
 
 class CandidateReferencesForm(forms.ModelForm):
     class Meta:
-        model = Reference
+        model = a_models.Reference
         exclude = ['application_ID']
         widgets = {
             'platform_ID': forms.Select(attrs={'class': 'form-control'}),
@@ -296,7 +295,7 @@ class CandidateReferencesForm(forms.ModelForm):
 
 # make a formset for references
 CandidateReferencesFormSet = forms.modelformset_factory(
-    Reference,
+    a_models.Reference,
     form=CandidateReferencesForm,
     extra=1,
     max_num=20,
@@ -309,8 +308,3 @@ CandidateReferencesFormSet = forms.modelformset_factory(
 
 
 ####################################DEBUG#########################################################
-class form1(forms.Form):
-    image = forms.ImageField()
-
-class form2(forms.Form):
-    name = forms.CharField()
