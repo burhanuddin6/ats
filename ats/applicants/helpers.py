@@ -1,4 +1,3 @@
-
 import random
 import string
 
@@ -45,12 +44,12 @@ def create_candidate(email,password,first_Name,last_Name):
 def save_application_data(request, applicant_id, job_id):
     print(applicant_id)
     candidate = a_models.Candidate.objects.get(pk=applicant_id)
-    job = a_forms.Job.objects.get(pk=job_id)
-    application = a_forms.Application.objects.get(job_ID=job)
-    candidate_application = a_forms.Candidate_Application(
+    job = a_models.Job.objects.get(pk=job_id)
+    application = a_models.Application.objects.get(job_ID=job)
+    candidate_application = a_models.Candidate_Application(
         candidate_ID=candidate,
         application_ID=application,
-        status=a_forms.Candidate_Application.UNDECIDED
+        status=a_models.Candidate_Application.UNDECIDED
     )
     print(request.POST)
     profile_form = a_forms.CandidateProfileForm(request.POST, request.FILES)
@@ -129,12 +128,12 @@ def save_application_data(request, applicant_id, job_id):
 
 def is_candidate(user):
     if user.is_authenticated:
-        if a_forms.Candidate.objects.filter(user=user).exists():
+        if a_models.Candidate.objects.filter(user=user).exists():
             return True
     return False
 
 def candidate_has_application(candidate):
-    application = a_forms.Candidate_Application.objects.filter(candidate_ID=candidate).first()
+    application = a_models.Candidate_Application.objects.filter(candidate_ID=candidate).first()
     if application is not None:
         return True
     return False

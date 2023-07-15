@@ -1,9 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import RedirectView
-from . import views
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+
+from . import views
 
 app_name = 'recruiters'
 urlpatterns = [
@@ -24,15 +23,35 @@ urlpatterns = [
     path('jobs/create', views.create_job, name='create_job'),
 
     # create job stage
-    path('jobs/<int:job_id>/create/stage/<str:stage_name>', views.create_stage, name='create_stage'),
-    path('jobs/<int:job_id>/create/interview/<int:stage_id>/slots', views.create_interview_slots, name='create_interview_slots'),
+    path(
+        'jobs/<int:job_id>/create/stage/<str:stage_name>', 
+        views.create_stage, 
+        name='create_stage'
+    ),
+    path(
+        'jobs/<int:job_id>/create/interview/<int:stage_id>/slots', 
+        views.create_interview_slots, 
+        name='create_interview_slots'
+    ),
 
     ############ ajax/fetch calls ############
 
     # interview
-    path('get_div_job_candidates/<int:job_id>', views.get_div_job_candidates, name='get_div_job_candidates'),
-    path('schedule_candidate_interview/<str:candidate_id>/<int:stage_id>', views.schedule_candidate_interview, name='schedule_candidate_interview'),
-    path('delete_candidate_interview/<str:candidate_id>/<int:stage_id>', views.delete_candidate_interview, name='delete_candidate_interview'),
+    path(
+        'get_div_job_candidates/<int:job_id>', 
+        views.get_div_job_candidates, 
+        name='get_div_job_candidates'
+    ),
+    path(
+        'schedule_candidate_interview/<str:candidate_id>/<int:stage_id>', 
+        views.schedule_candidate_interview, 
+        name='schedule_candidate_interview'
+    ),
+    path(
+        'delete_candidate_interview/<str:candidate_id>/<int:stage_id>', 
+        views.delete_candidate_interview, 
+        name='delete_candidate_interview'
+    ),
     
     # search
     path('search', views.search_candidates, name='search_candidates'),

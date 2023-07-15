@@ -1,20 +1,29 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, Http404
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
-from . import forms as r_forms
-from . import helpers as r_helpers
-from applicants import models as a_models
-from applicants import helpers as a_helpers
 from django.contrib import messages
 from django import template
-from django.core.exceptions import PermissionDenied
-# timezon
 from django.utils import timezone
 
+from applicants import models as a_models
+from applicants import helpers as a_helpers
+
+from . import forms as r_forms
+from . import helpers as r_helpers
+
 register = template.Library()
+
+DAYS_OF_WEEK = {
+    0: 'M',
+    1: 'T',
+    2: 'W',
+    3: 'H',
+    4: 'F',
+    5: 'S',
+    6: 'U'
+}
 
 # Create your views here.
 def index(request):
@@ -111,8 +120,9 @@ def job(request, job_id):
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
 def approve_candidate(request, job_id):
-    # TODO
-    # if there exist a next stage then add candidate to that row with undecided status
+    """
+    TODO if there exist a next stage then add candidate to that row with undecided status
+    """
     response = JsonResponse({})
     if r_helpers.is_ajax(request):
         try:
@@ -137,8 +147,8 @@ def approve_candidate(request, job_id):
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
 def reject_candidate(request, job_id):
-    # TODO
-    # if there exist a next stage then add candidate to that row with undecided status
+    """ TODO if there exist a next stage then add candidate to that row with undecided status
+    """
     response = JsonResponse({})
     if r_helpers.is_ajax(request):
         # try:
@@ -222,14 +232,11 @@ def create_stage(request, job_id, stage_name):
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
 def search_candidates(request):
-    status_code = 200
     candidates = []
     try:
         candidates = r_helpers.search_candidates(request, SEARCH_TYPES=SEARCH_TYPES)
     except Exception as e:
         print(e)
-        status_code = 400
-    print(candidates)
     return render(request, 'recruiters/div_candidates.html', {
         'candidates': candidates,
     })
@@ -239,14 +246,16 @@ def create_interview_slots(request, job_id, stage_id):
     if request.method == "POST":
         slot_group_form = r_forms.InterviewSlotGroupForm(request.POST)
         print(request.POST)
-        interview_daily_forms = [r_forms.InterviewDailyTimeForm(request.POST, prefix=str(x)) for x in range(0,7)]
+        interview_daily_forms = [
+            r_forms.InterviewDailyTimeForm(request.POST, prefix=str(x)) for x in range(0,7)
+        ]
         print(interview_daily_forms)
         if slot_group_form.is_valid() and all([form.is_valid() for form in interview_daily_forms]):
             slot_group_form = slot_group_form.save(commit=False)
             slot_group_form.interview_ID = a_models.Interview.objects.get(id=stage_id)
             slot_group_form.save()
             for form in interview_daily_forms:
-                if form.cleaned_data['check'] == True:
+                if form.cleaned_data['check']:
                     form = form.save(commit=False)
                     form.slot_Group_ID = slot_group_form
                     form.save()
@@ -271,13 +280,11 @@ def create_interview_slots(request, job_id, stage_id):
             'stage': a_models.Interview.objects.get(id=stage_id),
             'slot_group_form': r_forms.InterviewSlotGroupForm(),
             'interview_daily_forms': [ 
-                r_forms.InterviewDailyTimeForm(initial={'day': 'M', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='0'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'T', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='1'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'W', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='2'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'H', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='3'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'F', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='4'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'S', 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, prefix='5'),
-                r_forms.InterviewDailyTimeForm(initial={'day': 'U', 'check':False, 'start_Time': '09:00', 'end_Time': '09:00'}, prefix='6'),
+                r_forms.InterviewDailyTimeForm(
+                    initial={'day': value, 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, 
+                    prefix=str(i)
+                )
+                for i, value in enumerate(DAYS_OF_WEEK)
             ],
         })
     
@@ -297,7 +304,7 @@ def schedule_candidate_interview(request, candidate_id, stage_id):
     try:
         candidate_interview = a_models.Candidate_Interview.objects.get(candidate_ID=candidate_id, interview_ID=stage_id)
         slot = a_models.Interview_Slot.objects.filter(slot_Group_ID__interview_ID=stage_id, vacant=True, datetime_Of_Interview__gt=(timezone.now() + timezone.timedelta(days=1))).order_by('datetime_Of_Interview').first()
-        assert(r_helpers.not_none(slot, candidate_interview))
+        assert r_helpers.not_none(slot, candidate_interview)
     except Exception as e:
         print(e)
         if e.__class__.__name__ == "AssertionError":
@@ -315,6 +322,7 @@ def schedule_candidate_interview(request, candidate_id, stage_id):
         candidate_interview.save(update_fields=['interview_Slot_ID'])
         slot.save(update_fields=['vacant'])
     except Exception as e:
+        print(e)
         slot.vacant = True
         candidate_interview.interview_Slot_ID = None
         candidate_interview.save(update_fields=['interview_Slot_ID'])
@@ -355,7 +363,7 @@ def get_div_job_candidates(request, job_id):
     """
     active_stage_id = request.GET.get('active_stage_id', None)
     active_stage_name = request.GET.get('active_stage_name', None)
-    assert(r_helpers.not_none(active_stage_id, active_stage_name))
+    assert r_helpers.not_none(active_stage_id, active_stage_name)
     context = r_helpers.get_job_context(int(job_id), active_stage_id, active_stage_name)
     print("div_job_was called")
     return render(request, 'recruiters/div_job_candidates.html', {
