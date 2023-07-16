@@ -73,7 +73,7 @@ def get_candidate_img_src(candidate_ID):
 @register.simple_tag(name='get_candidate_resume_src')
 def get_candidate_resume_src(candidate_ID):
     """ gets the path of the candidate's resume."""
-    from applicants.models import Candidate
+    from applicants.models import Candidate #pylint: disable=import-outside-toplevel
     candidate = Candidate.objects.get(candidate_ID=candidate_ID)
     file_name = candidate.candidate_application.profile.resume_File_Name
     if file_name is None:

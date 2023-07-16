@@ -17,8 +17,9 @@ def check_file_name_size(file_obj, size_limit, rename=False, rename_to=''):
             return True
     else:
         raise ValueError("File type is not supported. Supported file types are:\n" + 
-                         '\n'.join([str(x) for x in (settings.IMAGE_FILE_TYPES + settings.DOCUMENT_FILE_TYPES)])
-        )
+                        '\n'.join([str(x) for x in (
+                            settings.IMAGE_FILE_TYPES + settings.DOCUMENT_FILE_TYPES
+                        )]))
 
 def store_candidate_files(file_obj, candidate_ID):
     file_system = FileSystemStorage(
@@ -108,7 +109,7 @@ class SignUpForm(forms.ModelForm):
         email = cleaned_data.get("email")
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Email already registered")
-        if not (cleaned_data.get("first_Name").isalpha() and cleaned_data.get("last_Name").isalpha()):
+        if not (cleaned_data.get("first_Name").isalpha() and cleaned_data.get("last_Name").isalpha()): #pylint: disable=line-too-long
             raise forms.ValidationError("Name can only contain alphabets")
         
         email = cleaned_data.get("email")
@@ -184,7 +185,11 @@ class CandidateSkillsForm(forms.ModelForm):
         exclude = ['application_ID', 'certificate_File_Name']
     def clean_certificate(self):
         certificate = self.cleaned_data.get("certificate")
-        check_file_name_size(certificate, settings.SMALL_FILE_SIZE, rename=True, rename_to='certificate')
+        check_file_name_size(
+            certificate, 
+            settings.SMALL_FILE_SIZE, 
+            rename=True, 
+            rename_to='certificate')
         self.certificate_File_Name = certificate.name
         return certificate
 

@@ -21,7 +21,8 @@ def index(request):
             return HttpResponse("From index: You have already applied to a job.")
         else:
             if "job_id" in request.session: # divert to that job
-                return HttpResponseRedirect(reverse('applicants:job', args=(request.session['job_id'],)))
+                return HttpResponseRedirect(reverse('applicants:job', 
+                                                    args=(request.session['job_id'],)))
             else: # show all jobs
                 return HttpResponseRedirect(reverse('applicants:all_jobs'))
     
@@ -59,7 +60,9 @@ def signup(request):
                 cleaned_data = candidate_form.cleaned_data
                 request.session['candidate_form'] = cleaned_data
                 request.session['verification_code'] = a_helpers.generate_numeric_string(6)
-                email.send_verification_email(candidate_form.cleaned_data['email'], request.session['verification_code'])
+                email.send_verification_email(
+                    candidate_form.cleaned_data['email'], 
+                    request.session['verification_code'])
                 return HttpResponseRedirect(reverse('applicants:verify'))
             else:
                 messages.error(request, "Invalid form")
@@ -81,7 +84,7 @@ def verify(request):
     if request.method == "POST":
         verify_form = a_forms.VerifyForm(request.POST)
         if verify_form.is_valid():
-            if verify_form.cleaned_data['verification_code'] == request.session['verification_code']:
+            if verify_form.cleaned_data['verification_code'] == request.session['verification_code']: #pylint: disable=line-too-long
                 # create user-candidate
                 a_helpers.create_candidate(
                     email=request.session['candidate_form']['email'],
@@ -136,7 +139,8 @@ def apply_for_job(request, job_id):
         if not a_helpers.is_candidate(request.user):
             return HttpResponseRedirect(reverse('applicants:signup'))
         else:
-            return HttpResponseRedirect(reverse('applicants:application', args=(request.user.candidate.candidate_ID,)))
+            return HttpResponseRedirect(reverse('applicants:application', 
+                                                    args=(request.user.candidate.candidate_ID,)))
 
     if request.method == "POST":
         raise NotImplementedError("method POST NOT implemented for view: apply_for_job")

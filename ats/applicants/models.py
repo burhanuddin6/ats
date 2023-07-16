@@ -1,5 +1,4 @@
-import datetime
-import pytz
+import datetime, pytz
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -391,7 +390,8 @@ class Experience(models.Model):
 ########################################################################################
 
 class OptionalSchemeURLValidator(URLValidator):
-    """URL Validator that allows URLs without a scheme
+    """
+    URL Validator that allows URLs without a scheme
     """
     def __call__(self, value):
         if '://' not in value:

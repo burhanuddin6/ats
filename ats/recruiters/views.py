@@ -43,7 +43,9 @@ def login_view(request):
                 'message': "Invalid credentials"
             })
         print(login_form.cleaned_data)
-        user = authenticate(request, username=login_form.cleaned_data['username'], password=login_form.cleaned_data['password'])
+        user = authenticate(request, 
+                            username = login_form.cleaned_data['username'], 
+                            password=login_form.cleaned_data['password'])
         if user is not None:
             if not a_helpers.is_recruiter(user):
                 return render(request, 'recruiters/login.html', {
@@ -203,11 +205,17 @@ def create_stage(request, job_id, stage_name):
         elif stage_name == "test":
             form = r_forms.JobTestForm(request.POST)
         else:
-            raise NotImplementedError("Only interview and test stages are supported. TODO: add support for generic stages")
+            raise NotImplementedError(
+                "Only interview and test stages are supported. \
+                TODO: add support for generic stages")
         
         no_overlaps = True
         if form.is_valid():
-            no_overlaps, overlapping_stage, min_date = r_helpers.check_stage_overlap(job_id, form.cleaned_data['start_Date'], form.cleaned_data['end_Date'], stage_name)
+            no_overlaps, overlapping_stage, min_date = r_helpers.check_stage_overlap (
+                    job_id, 
+                    form.cleaned_data['start_Date'], 
+                    form.cleaned_data['end_Date'], 
+                    stage_name)
             if no_overlaps:
                 form = form.save(commit=False)
                 form.job_ID = job
@@ -217,7 +225,9 @@ def create_stage(request, job_id, stage_name):
                 return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))   
         
         if not no_overlaps:
-            messages.error(request, "Error creating stage. Stage overlaps with {}. Date must be greater than {}".format(overlapping_stage, min_date))
+            messages.error(request, 
+                           "Error creating stage. Stage overlaps with {}.  \
+                           Date must be greater than {}".format(overlapping_stage, min_date))
         return render(request, 'recruiters/create_interview_stage.html', {
             'heading': heading,
             'user': request.user,
@@ -293,7 +303,12 @@ def create_interview_slots(request, job_id, stage_id):
             'slot_group_form': r_forms.InterviewSlotGroupForm(initial={'duration': stage.duration}),
             'interview_daily_forms': [ 
                 r_forms.InterviewDailyTimeForm(
-                    initial={'day': value, 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, 
+                    initial = { 
+                        'day': value, 
+                        'check': True, 
+                        'start_Time': '09:00', 
+                        'end_Time': '17:00'
+                    }, 
                     prefix=str(i)
                 )
                 for i, value in DAYS_OF_WEEK.items()
@@ -314,15 +329,25 @@ def schedule_candidate_interview(request, candidate_id, stage_id):
     """
     response = JsonResponse({})
     try:
-        candidate_interview = a_models.Candidate_Interview.objects.get(candidate_ID=candidate_id, interview_ID=stage_id)
-        slot = a_models.Interview_Slot.objects.filter(slot_Group_ID__interview_ID=stage_id, vacant=True, datetime_Of_Interview__gt=(timezone.now() + timezone.timedelta(days=1))).order_by('datetime_Of_Interview').first()
+        candidate_interview = a_models.Candidate_Interview.objects.get(
+            candidate_ID = candidate_id, 
+            interview_ID = stage_id)
+        slot = a_models.Interview_Slot.objects.filter (
+            slot_Group_ID__interview_ID = stage_id, 
+            vacant = True, 
+            datetime_Of_Interview__gt = (timezone.now() + timezone.timedelta(days=1))
+            ).order_by('datetime_Of_Interview').first()
         assert r_helpers.not_none(slot, candidate_interview)
     except Exception as e:
         print(e)
         if e.__class__.__name__ == "AssertionError":
-            messages.error(request, "No slots available for this interview.\nPlease create a slot first.")
+            messages.error(request, 
+                           "No slots available for this interview. \
+                           \nPlease create a slot first.")
         else:
-            messages.error(request, "Internal Server Error: Error scheduling candidate.\nPlease Try Again")
+            messages.error(request, 
+                           "Internal Server Error: Error scheduling candidate. \
+                           \nPlease Try Again")
         response.status_code = 500
         return response
     try:
@@ -357,7 +382,9 @@ def delete_candidate_interview(request, candidate_id, stage_id):
     """
     response = JsonResponse({})
     try:
-        candidate_interview = a_models.Candidate_Interview.objects.get(candidate_ID=candidate_id, interview_ID=stage_id)
+        candidate_interview = a_models.Candidate_Interview.objects.get (
+            candidate_ID=candidate_id, 
+            interview_ID=stage_id)
         candidate_interview.interview_Slot_ID.delete()
     except Exception as e:
         print(e)

@@ -61,8 +61,12 @@ def save_application_data(request, applicant_id, job_id):
     print(references_formset)
     if profile_form.is_valid():
         profile = profile_form.save(commit=False)
-        a_forms.store_candidate_files(profile_form.cleaned_data.get('photo'), candidate.candidate_ID)
-        a_forms.store_candidate_files(profile_form.cleaned_data.get('resume'), candidate.candidate_ID)
+        a_forms.store_candidate_files(
+            profile_form.cleaned_data.get('photo'), 
+            candidate.candidate_ID)
+        a_forms.store_candidate_files(
+            profile_form.cleaned_data.get('resume'), 
+            candidate.candidate_ID)
         profile.application_ID = application
         profile.photo_File_Name = profile_form.cleaned_data.get('photo').name
         profile.resume_File_Name = profile_form.cleaned_data.get('resume').name
@@ -83,7 +87,9 @@ def save_application_data(request, applicant_id, job_id):
     if experience_form.is_valid():
         experience = experience_form.save(commit=False)
         experience.application_ID = application
-        a_forms.store_candidate_files(experience_form.cleaned_data.get('job_Slip'), candidate.candidate_ID)
+        a_forms.store_candidate_files(
+            experience_form.cleaned_data.get('job_Slip'), 
+            candidate.candidate_ID)
         experience.job_Slip_File_Name = experience_form.cleaned_data.get('job_Slip').name
         experience.save()
         candidate_application.experience = experience
