@@ -59,6 +59,8 @@ def login_view(request):
                 'message': "Invalid credentials"
             })
     if request.method == "GET":
+        if request.user.is_authenticated and a_helpers.is_recruiter(request.user):
+            return HttpResponseRedirect(reverse('recruiters:dashboard'))
         return render(request, 'recruiters/login.html', {
             'login_form': r_forms.LoginForm(),
         })
