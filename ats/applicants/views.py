@@ -54,7 +54,7 @@ def logout_view(request):
 def signup(request):
     if request.method == 'POST':
         if 'candidate_form' in request.POST:
-            candidate_form = a_forms.CandidateForm(request.POST)
+            candidate_form = a_forms.SignUpForm(request.POST)
             if candidate_form.is_valid():
                 cleaned_data = candidate_form.cleaned_data
                 request.session['candidate_form'] = cleaned_data
@@ -74,7 +74,7 @@ def signup(request):
     if request.method == "GET":
         messages.info(request, "Please Sign Up")
         return render(request, 'applicants/signup.html', {
-            'candidate_form': a_forms.CandidateForm(),
+            'candidate_form': a_forms.SignUpForm(),
         })
 
 def verify(request):

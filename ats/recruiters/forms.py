@@ -100,7 +100,7 @@ class JobInterviewForm(forms.ModelForm):
 class JobTestForm(forms.ModelForm):
     class Meta:
         model = a_models.Test
-        exclude = ['job_ID']
+        exclude = ['job_ID', 'created_By']
         widgets = {
             'start_Date': forms.DateInput(attrs={
                 'class': 'form-control',

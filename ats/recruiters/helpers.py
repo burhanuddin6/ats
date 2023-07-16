@@ -11,7 +11,9 @@ def not_none(*args):
 
 def check_stage_overlap(job_id, start_Date, end_Date, stage_name):
     job = a_models.Job.objects.get(pk=job_id)
-    stages = list(a_models.Base_Job_Stage.objects.filter(job_ID=job_id).order_by('-end_Date'))
+    stages = list(a_models.Base_Job_Stage.objects.filter(job_ID=job_id).order_by('end_Date'))
+    for stage in stages:
+        print(stage)
     if stage_name.lower() == "application" and job.job_stages.filter(name="Application").exists():
         return (False, "Application", "")
     if (stages[-1].end_Date > start_Date or stages[-1].end_Date > end_Date):
@@ -104,6 +106,34 @@ def change_candidate_status(candidate_id, stage_id, stage_name, new_status):
     else:
         raise ValueError()
     temp.save()
+    
+def add_candidates_to_stage_in_bulk(stage, candidates):
+    objects = []
+    if isinstance(stage, a_models.Test):
+        for candidate in candidates:
+            objects.append(
+                a_models.Candidate_Test(
+                candidate_ID=candidate,
+                test_ID=stage,
+                status=a_models.Candidate_Test.UNDECIDED
+            ))
+    elif isinstance(stage, a_models.Interview):
+        for candidate in candidates:
+            objects.append(
+                a_models.Candidate_Interview(
+                candidate_ID=candidate,
+                interview_ID=stage,
+                status=a_models.Candidate_Interview.UNDECIDED
+            ))
+    else:
+        raise NotImplementedError("Candidates can only be added to test and interview stages manually.")
+    if len(objects) > 0:
+        if isinstance(stage, a_models.Test):
+            a_models.Candidate_Test.objects.bulk_create(objects)
+        elif isinstance(stage, a_models.Interview):
+            a_models.Candidate_Interview.objects.bulk_create(objects)
+        else:
+            raise NotImplementedError("Candidates can only be added to test and interview stages manually.")
 
 def add_candidate_to_next_stage(candidate_id, current_stage_id, current_stage_name):
     """Adds the candidate to the next stage of the recruitment process if there is one.
@@ -159,16 +189,6 @@ def drop_candidate_from_stage(job_id, candidate_id, stage_id, stage_name):
         test.save(update_fields=['status'])
     else:
         raise ValueError()
-    print('deleted')
-    # stages = list(a_models.Base_Job_Stage.objects.filter(job_ID=job_id))
-    # index = stages.index(stage)
-    # if 0 < index:
-    #     change_candidate_status(
-    #         candidate_id=candidate_id,
-    #         stage_id=stages[index-1].id,
-    #         stage_name=type(stages[index-1]).__name__,
-    #         new_status=a_models.Candidate_Application.UNDECIDED
-    #     )
 
 def create_job(request):
     job_form = r_forms.JobCreationForm(request.POST)
@@ -184,13 +204,7 @@ def create_job(request):
     
 
 def search_candidates(request, SEARCH_TYPES):
-    # search_by can be name, email, phone, skills, experience, education, current_company
-    # rank candidates based on the search term
-    # return all matching candidates
-    # if search_by is skills, experience, education, current_company, rank candidates based on the search term
-    
     # TODO
-    # add pagination
     # add search by skills, experience, education, current_company
     # add ranking
     from urllib.parse import unquote
@@ -224,3 +238,33 @@ def schedule_interviews():
     # TODO
     # schedule interviews for candidates
     pass
+
+
+def add_approved_cand_from_prev_stage(job_id):
+    stages = list(a_models.Base_Job_Stage.objects.filter(job_ID=job_id).order_by('end_Date'))
+    new_stage = stages[-1]
+    prev_stage = stages[-2]
+    assert not_none(new_stage, prev_stage)
+    if isinstance(prev_stage, a_models.Application):
+        candidates = list(
+            a_models.Candidate.objects.filter(
+                candidate_application__application_ID=prev_stage, 
+                candidate_application__status=a_models.Candidate_Application.ACCEPTED
+            ))
+    elif isinstance(prev_stage, a_models.Test):
+        candidates = list(
+            a_models.Candidate.objects.filter(
+                candidate_tests__test_ID=prev_stage, 
+                candidate_tests__status=a_models.Candidate_Test.ACCEPTED
+            ))
+    elif isinstance(prev_stage, a_models.Interview):
+        candidates = a_models.Candidate.objects.filter(
+            interviews__interview_ID=prev_stage, 
+            interviews__status=a_models.Candidate_Interview.ACCEPTED
+        )
+    else:
+        raise NotImplementedError("Only Application, Test and Interview stages are supported")
+    add_candidates_to_stage_in_bulk(
+        stage=new_stage,
+        candidates=candidates
+    )

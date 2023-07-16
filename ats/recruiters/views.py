@@ -194,8 +194,8 @@ def create_job(request):
 @user_passes_test(a_helpers.is_recruiter)
 def create_stage(request, job_id, stage_name):
     job = a_models.Job.objects.get(id=job_id)
+    heading = job.title + " - Create " + stage_name.capitalize() + " Stage"
     if request.method == "POST":
-        
         if stage_name == "interview":
             form = r_forms.JobInterviewForm(request.POST)
         elif stage_name == "test":
@@ -211,6 +211,7 @@ def create_stage(request, job_id, stage_name):
                 form.job_ID = job
                 form.created_By = request.user.recruiter
                 form.save()
+                r_helpers.add_approved_cand_from_prev_stage(job_id)
                 return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))   
         
         if not no_overlaps:
@@ -220,15 +221,13 @@ def create_stage(request, job_id, stage_name):
             'user': request.user,
             'stage_form': form,
             'job': job,
-            stage_name: stage_name,
+            'stage_name': stage_name,
         })
     else:
         if stage_name == "interview":
             new_form = r_forms.JobInterviewForm()
-            heading = job.title + ' - Create Interview Stage'
         elif stage_name == "test":
             new_form = r_forms.JobTestForm()
-            heading = job.title + ' - Create Test Stage'
         return render(request, 'recruiters/create_interview_stage.html', {
             'heading': heading,
             'user': request.user,

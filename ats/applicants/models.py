@@ -720,16 +720,6 @@ class Test(Base_Job_Stage):
         ordering = ['job_ID','start_Date', 'end_Date']
         verbose_name = "Test Stage For Jobs"
         verbose_name_plural = "Test Stages For Jobs"
-    
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
-        if self.start_Date > self.end_Date:
-            raise ValidationError("Start date cannot be greater than end date")
-        stages = list(self.job_ID.job_stages.all())
-        for stage in stages:
-            if (not stage.pk == self.pk) and (stage.end_Date > self.start_Date or stage.end_Date > self.end_Date):
-                raise ValidationError("Stage (Application, Test(s), Interview(s)) dates cannot overlap")
-
 
     def save(self, *args, **kwargs):
         self.full_clean()

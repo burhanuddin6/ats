@@ -48,22 +48,6 @@ class LoginForm(forms.Form):
         max_length=16,
     )
 
-class CandidateEmailForm(forms.Form):
-    email = forms.EmailField(
-        widget=forms.EmailInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter Email',
-            }
-        ),
-        required=True,
-        max_length=254,
-    )
-    def clean_email(self):
-        email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Email already registered")
-        return email
     
 class VerifyForm(forms.Form):
     verification_code = forms.CharField(
@@ -78,7 +62,7 @@ class VerifyForm(forms.Form):
     )
     
 
-class CandidateForm(forms.ModelForm):
+class SignUpForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
@@ -118,7 +102,7 @@ class CandidateForm(forms.ModelForm):
         self.cleaned_data['last_Name'] = self.cleaned_data['last_Name'].capitalize()
 
     def clean(self):
-        cleaned_data = super(CandidateForm, self).clean()
+        cleaned_data = super().clean()
         if cleaned_data.get("password") != cleaned_data.get("confirm_password"):
             raise forms.ValidationError("Passwords do not match")
         email = cleaned_data.get("email")
