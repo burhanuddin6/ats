@@ -178,13 +178,48 @@ class InterviewDailyTimeForm(forms.ModelForm):
 # InterviewDailyTimeFormSet = forms.formset_factory(InterviewDailyTimeForm, extra=7)
 # set initial data for each of the 7 days
 # InterviewDailyTimeFormSet.initial = [
-#     {'day': 'Monday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': True},
-#     {'day': 'Tuesday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': True},
-#     {'day': 'Wednesday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': True},
-#     {'day': 'Thursday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': True},
-#     {'day': 'Friday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': True},
-#     {'day': 'Saturday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': False},
-#     {'day': 'Sunday', 'start_Time': datetime.time(9, 0), 'end_Time': datetime.time(17, 0), 'check': False},
+#     {
+#       'day': 'Monday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': True
+#     },
+#     { 
+#       'day': 'Tuesday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': True
+#     },
+#     {
+#       'day': 'Wednesday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': True
+#     },
+#     {
+#       'day': 'Thursday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': True
+#     },
+#     {
+#       'day': 'Friday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': True
+#     },
+#     {
+#       'day': 'Saturday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': False
+#     },
+#     {
+#       'day': 'Sunday', 
+#       'start_Time': datetime.time(9, 0), 
+#       'end_Time': datetime.time(17, 0), 
+#       'check': False
+#     },
 # ]
 
 
