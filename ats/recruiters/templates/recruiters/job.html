@@ -7,55 +7,70 @@
     <link href="{% static 'recruiters/styles.css' %}" rel="stylesheet">
     <link href="{% static 'recruiters/styles-job.css' %}" rel="stylesheet">
     <link href="{% static 'recruiters/styles-candidates.css' %}" rel="stylesheet">
+    <link href="{% static 'applicants/css/job-description.css' %}" rel="stylesheet">
 
 {% endblock %}
 
 {% block head_content %}
-    <div style="height: 60px;" id="add_interview_stage">
-        <a href="{% url 'recruiters:create_stage' job.id 'interview' %}">
-            <button class="button">Add Interview Stage</button>
-        </a>
-    </div>
-    <div style="height: 60px;" id="add_test_stage">
-        <a href="{% url 'recruiters:create_stage' job.id 'test' %}">
-            <button class="button">Add Test Stage</button>
-        </a>
-    </div>
+        <div style="height: 60px;" id="add_interview_stage">
+            <a href="{% url 'recruiters:create_stage' job.id 'interview' %}">
+                <button class="button btn">Add Interview Stage</button>
+            </a>
+        </div>
+        <div style="height: 60px;" id="add_test_stage">
+            <a href="{% url 'recruiters:create_stage' job.id 'test' %}">
+                <button class="button btn">Add Test Stage</button>
+            </a>
+        </div>
 {% endblock %}
 
 {% block content %}
     <!-- ***************************************************************************** -->
     <!-- Flexbox for job details -->
-    <div id="job_page" class="page">
+    <div id="job-page" class="page">
 
         <!-- Block 1: Details of the Job -->
-        {% include "recruiters/div_details_job.html" %}
+        <div id="job-description-container-parent">
+            {% include "applicants/div_job_description.html" %}
+        </div>
 
         <!-- Block 2: Candidates -->
         <div>
             <!-- A nav bar for different stages -->
             <div class="navbar stages">
-                <a href="{% url 'recruiters:job' job.id %}" class="navbar-item">Application </a>
+                <a href="{% url 'recruiters:job' job.id %}" class="navbar-item">
+                    <button class="btn bottom-nav" style="width:fit-content">
+                        Application
+                    </button>
+                </a>
                 {% for test_stage in test_stages %}
-                    <a href="{% url 'recruiters:job' job.id %}?stage_id={{test_stage.id}}&stage_name=test" class="navbar-item">{{ test_stage.name }}</a>
+                    <a href="{% url 'recruiters:job' job.id %}?stage_id={{test_stage.id}}&stage_name=test" class="navbar-item">
+                        <button class="btn bottom-nav" style="width:fit-content">
+                            {{ test_stage.name }}
+                        </button>
+                    </a>
                 {% endfor %}
                 {% for interview_stage in interview_stages %}
-                    <a href="{% url 'recruiters:job' job.id %}?stage_id={{interview_stage.id}}&stage_name=interview" class="navbar-item">{{ interview_stage.name }}</a>
+                    <a href="{% url 'recruiters:job' job.id %}?stage_id={{interview_stage.id}}&stage_name=interview" class="navbar-item">
+                        <button class="btn bottom-nav" style="width:fit-content">
+                            {{ interview_stage.name }}
+                        </button>
+                    </a>    
                 {% endfor %}
             </div>
             <!-- Dispaly all the candidates here -->
             
-            {% if active_stage_name|lower == "interview" %}
-                <div style="height: 60px;" id="create_slots">
-                    <a href="{% url 'recruiters:create_interview_slots' job.id active_stage_id %}">
-                        <button class="button">Create Slots</button>
-                    </a>
-                </div>
-                <div style="height: 60px;">
-                    <button class="button">Notify Candidates For Interview</button>
-                </div>
-            {% endif %}
             <div class="container-fluid candidates" id="job-candidates" data-url="{% url 'recruiters:get_div_job_candidates' job.id %}?active_stage_id={{ active_stage_id }}&active_stage_name={{ active_stage_name }}">
+                {% if active_stage_name|lower == "interview" %}
+                    <div style="height: 60px;" id="create_slots">
+                        <a href="{% url 'recruiters:create_interview_slots' job.id active_stage_id %}">
+                            <button class="btn button">Create Slots</button>
+                        </a>
+                    </div>
+                    <div style="height: 60px;">
+                        <button class="btn button">Notify Candidates For Interview</button>
+                    </div>
+                {% endif %}
                 {% include "recruiters/div_job_candidates.html" %}
             </div>
 

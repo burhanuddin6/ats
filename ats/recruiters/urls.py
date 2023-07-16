@@ -13,7 +13,7 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     # candidates paths
     path('candidates', views.candidates, name='candidates'),
-    # path('candidates/<int:candidate_id>', views.view_candidate, name='view_candidate'),
+    path('candidate/<slug:candidate_id>', views.candidate, name='candidate'),
 
     # job paths
     path('jobs', views.jobs, name='jobs'),

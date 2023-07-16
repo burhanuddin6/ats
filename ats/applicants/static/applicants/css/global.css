@@ -10,9 +10,11 @@
 
   
     /* font sizes */
-    --text-s-regular-size: 12px;
-    --text-l-regular-size: 16px;
-    --heading-s-size: 20px;
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+    --font-size-xs: 12px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
   
     /* Colors */
     --neutral-10: #fff;
@@ -53,6 +55,7 @@
 body{
     font-family: "Lato", sans-serif;
     background-color: white;
+    font-size: var(--font-size-base);
 
 }
 h1, h2{
@@ -148,4 +151,30 @@ h2, h3{
 
 .button-primary:hover {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
+
+
+@media screen and (min-width: 1600px) {
+    :root{
+        --font-size-base: 18px;
+        --font-size-sm: 16px;
+        --font-size-xs: 14px;
+        --font-size-lg: 22px;
+        --font-size-xl: 26px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    :root{
+        --font-size-base: 14px;
+        --font-size-sm: 12px;
+        --font-size-xs: 10px;
+        --font-size-lg: 16px;
+        --font-size-xl: 20px;
+
+    }
+    .container{
+        padding: 0px;
+        padding-left: 5px;
+    }
 }

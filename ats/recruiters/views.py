@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django import template
 from django.utils import timezone
-
+from django.forms.models import model_to_dict
 from applicants import models as a_models
 from applicants import helpers as a_helpers
+from applicants import forms as a_forms
 
 from . import forms as r_forms
 from . import helpers as r_helpers
@@ -385,4 +386,22 @@ def get_div_job_candidates(request, job_id):
         'accepted_candidates': context['accepted_candidates'],
         'rejected_candidates': context['rejected_candidates'],
         'undecided_candidates': context['undecided_candidates'],
+    })
+
+
+@login_required
+@user_passes_test(a_helpers.is_recruiter)
+def candidate(request, candidate_id):
+    """Returns the candidate page for a given candidate
+
+    Args:
+        request (object): HttpRequest
+        candidate_id (int): candidate id
+    """
+    candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
+    return render(request, 'recruiters/div_candidate.html', {
+        'heading': candidate.first_Name,
+        'user': request.user,
+        'candidate': candidate,
+        'profile': a_forms.CandidateProfileForm(model_to_dict(candidate.candidate_application.profile)),
     })
