@@ -94,14 +94,40 @@ class JobInterviewForm(forms.ModelForm):
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Enter Description',
+            })
+        }
+
+class JobTestForm(forms.ModelForm):
+    class Meta:
+        model = a_models.Test
+        exclude = ['job_ID']
+        widgets = {
+            'start_Date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter Start Date',
+                'type': 'date',
             }),
-            'min_Gap_Between': forms.NumberInput(attrs={
-                'class': 'form-control small',
-                'placeholder': 'Enter time in minutes',
+            'end_Date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter End Date',
+                'type': 'date',
+            }),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter Name',
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter Description',
+            }),
+            'duration': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter Time in minutes',
             }),
         }
 
 class InterviewSlotGroupForm(forms.ModelForm):
+    duration = forms.IntegerField(required=True)
     class Meta:
         model = a_models.Slot_Group
         exclude = ['interview_ID']

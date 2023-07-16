@@ -195,10 +195,14 @@ def create_job(request):
 def create_stage(request, job_id, stage_name):
     job = a_models.Job.objects.get(id=job_id)
     if request.method == "POST":
+        
         if stage_name == "interview":
             form = r_forms.JobInterviewForm(request.POST)
         elif stage_name == "test":
-            form = r_forms.JobInterviewForm(request.POST)
+            form = r_forms.JobTestForm(request.POST)
+        else:
+            raise NotImplementedError("Only interview and test stages are supported. TODO: add support for generic stages")
+        
         no_overlaps = True
         if form.is_valid():
             no_overlaps, overlapping_stage, min_date = r_helpers.check_stage_overlap(job_id, form.cleaned_data['start_Date'], form.cleaned_data['end_Date'], stage_name)
@@ -208,25 +212,29 @@ def create_stage(request, job_id, stage_name):
                 form.created_By = request.user.recruiter
                 form.save()
                 return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))   
+        
         if not no_overlaps:
             messages.error(request, "Error creating stage. Stage overlaps with {}. Date must be greater than {}".format(overlapping_stage, min_date))
-        # add form error messages
         return render(request, 'recruiters/create_interview_stage.html', {
-            'heading': 'Create Interview Stage',
+            'heading': heading,
             'user': request.user,
             'stage_form': form,
             'job': job,
+            stage_name: stage_name,
         })
     else:
         if stage_name == "interview":
             new_form = r_forms.JobInterviewForm()
+            heading = job.title + ' - Create Interview Stage'
         elif stage_name == "test":
-            new_form = r_forms.JobInterviewForm()
+            new_form = r_forms.JobTestForm()
+            heading = job.title + ' - Create Test Stage'
         return render(request, 'recruiters/create_interview_stage.html', {
-            'heading': 'Create Interview Stage',
+            'heading': heading,
             'user': request.user,
             'stage_form': new_form,
             'job': job,
+            'stage_name': stage_name,
         })
 
 @login_required
@@ -251,14 +259,16 @@ def create_interview_slots(request, job_id, stage_id):
         ]
         print(interview_daily_forms)
         if slot_group_form.is_valid() and all([form.is_valid() for form in interview_daily_forms]):
-            slot_group_form = slot_group_form.save(commit=False)
-            slot_group_form.interview_ID = a_models.Interview.objects.get(id=stage_id)
-            slot_group_form.save()
+            slot_group = slot_group_form.save(commit=False)
+            slot_group.interview_ID = a_models.Interview.objects.get(id=stage_id)
+            slot_group.save()
             for form in interview_daily_forms:
                 if form.cleaned_data['check']:
                     form = form.save(commit=False)
-                    form.slot_Group_ID = slot_group_form
+                    form.slot_Group_ID = slot_group
                     form.save()
+            # now create interview slots.
+            slot_group.create_interview_slots()
             return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))
         else:
             messages.error(request, "Error creating interview slots. Invalid data")
@@ -272,19 +282,20 @@ def create_interview_slots(request, job_id, stage_id):
                 'interview_daily_forms': interview_daily_forms,
             })
     else:
+        stage = a_models.Interview.objects.get(id=stage_id)
         return render(request, 'recruiters/create_interview_slots.html', {
             'heading': job.title,
             'sub_heading': 'Create Interview Slots',
             'user': request.user,
             'job': job,
-            'stage': a_models.Interview.objects.get(id=stage_id),
-            'slot_group_form': r_forms.InterviewSlotGroupForm(),
+            'stage': stage,
+            'slot_group_form': r_forms.InterviewSlotGroupForm(initial={'duration': stage.duration}),
             'interview_daily_forms': [ 
                 r_forms.InterviewDailyTimeForm(
                     initial={'day': value, 'check':True, 'start_Time': '09:00', 'end_Time': '17:00'}, 
                     prefix=str(i)
                 )
-                for i, value in enumerate(DAYS_OF_WEEK)
+                for i, value in DAYS_OF_WEEK.items()
             ],
         })
     

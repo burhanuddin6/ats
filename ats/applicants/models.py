@@ -1,4 +1,5 @@
 import datetime
+import pytz
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -7,6 +8,17 @@ from django.utils import timezone
 from django.core.validators import URLValidator
 
 from polymorphic.models import PolymorphicModel
+
+DAYS_OF_WEEK = {
+    0: 'M',
+    1: 'T',
+    2: 'W',
+    3: 'H',
+    4: 'F',
+    5: 'S',
+    6: 'U',
+}
+TIMEZONE = pytz.timezone('Asia/Karachi')
 
 def is_recruiter(user_id):
     """Checks whether a the user is in the Recruiters group
@@ -572,38 +584,55 @@ class Slot_Group(models.Model):
         db_index=False,
         default= 10,
     )
-    def create_interview_slots(self, NUMBER):
+    def create_interview_slots(self):
         """ Creates NUMBER interview slots for the slot group
         NUMBER: NUMBERumber of slots to be created
         
         Returns a list of interview slots"""
+        
+        NUMBER = self.number_Of_Slots
         temp = Interview_Daily_TimeFrame.objects.filter(slot_Group_ID=self)
         print(temp)
-        timeframes = {
-            'monday': temp.filter(day='M').first(),
-            'tuesday': temp.filter(day='T').first(),
-            'wednesday': temp.filter(day='W').first(),
-            'thursday': temp.filter(day='H').first(),
-            'friday': temp.filter(day='F').first(),
-            'saturday': temp.filter(day='S').first(),
-            'sunday': temp.filter(day='U').first(),
-        }
         duration = self.interview_ID.duration
         gap = self.min_Gap_Between
-        date = self.start_Date
+        date = datetime.datetime.combine(self.start_Date, datetime.time(0, 0))
+        print(date + datetime.timedelta(days=1))
         slots = []
+        day_times = {}
+        for obj in temp.all():
+            day_times[obj.day] = obj
+        # incase there was an invalid form submission
+        print(temp)
+        if day_times == {}:
+            return
         while NUMBER > 0:
-            for day in timeframes:
-                start = timeframes[day].start_Time
-                end = timeframes[day].end_Time
-                while start + datetime.timedelta(minutes=duration) <= end:
-                    slots.append({'start': start, 'end': start + datetime.timedelta(minutes=duration), 'date': date, 'day': day})
-                    start += datetime.timedelta(minutes=duration + gap)
-                    NUMBER -= 1
-                    if NUMBER <= 0:
-                        break
-                date += datetime.timedelta(days=1)  
-        return slots
+            day = DAYS_OF_WEEK[date.weekday()]
+            if day in day_times:
+                data = day_times[day]
+            else:
+                print(NUMBER)
+                print(date)
+                print(date + datetime.timedelta(days=1))
+                date += datetime.timedelta(days=1)
+                continue
+            start = datetime.datetime.combine(date, data.start_Time)
+            end = datetime.datetime.combine(date, data.end_Time)
+            print(slots)
+            while start + datetime.timedelta(minutes=duration) <= end:
+                slots.append(
+                    Interview_Slot(
+                        slot_Group_ID=self,
+                        datetime_Of_Interview=start.replace(tzinfo=TIMEZONE),
+                    )
+                )
+                start += datetime.timedelta(minutes=duration + gap)
+                NUMBER -= 1
+                if NUMBER <= 0:
+                    break
+            print(NUMBER)
+            print(date)
+            date += datetime.timedelta(days=1)  
+        Interview_Slot.objects.bulk_create(slots)
 
 class Interview_Daily_TimeFrame(models.Model):
     slot_Group_ID = models.ForeignKey(
@@ -613,13 +642,13 @@ class Interview_Daily_TimeFrame(models.Model):
         related_name="weekly_timeframes",
         verbose_name="Slot Group",
     )
-    MONDAY = 'M'
-    TUESDAY = 'T'
-    WEDNESDAY = 'W'
-    THURSDAY = 'H'
-    FRIDAY = 'F'
-    SATURDAY = 'S'
-    SUNDAY = 'U'
+    MONDAY = DAYS_OF_WEEK[0]
+    TUESDAY = DAYS_OF_WEEK[1]
+    WEDNESDAY = DAYS_OF_WEEK[2]
+    THURSDAY = DAYS_OF_WEEK[3]
+    FRIDAY = DAYS_OF_WEEK[4]
+    SATURDAY = DAYS_OF_WEEK[5]
+    SUNDAY = DAYS_OF_WEEK[6]
     DAY_CHOICES = [
         (MONDAY, 'Monday'),
         (TUESDAY, 'Tuesday'),
