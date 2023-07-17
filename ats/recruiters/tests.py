@@ -47,7 +47,9 @@ class SlotGroupTestCase(TestCase):
         self.jobs = []
         self.jobs.append(a_models.Job.objects.create(
             title='test title',
-            description='test description',
+            overview='test overview',
+            responsibilities='test responsibilities',
+            qualifications='test qualifications',
             salary_Range=a_models.Job._100,
             work_Site=a_models.Job.IN_OFFICE,
             work_Type=a_models.Job.FULL_TIME,
@@ -68,7 +70,7 @@ class SlotGroupTestCase(TestCase):
         job = a_models.Job.objects.get(title='test title')
         message = "Job object was not created successfully."
         self.assertEqual(job.title, 'test title', message)
-        self.assertEqual(job.description, 'test description', message)
+        self.assertEqual(job.overview, 'test overview', message)
         self.assertEqual(job.salary_Range, a_models.Job._100, message)
         self.assertEqual(job.work_Site, a_models.Job.IN_OFFICE, message)
         self.assertEqual(job.work_Type, a_models.Job.FULL_TIME, message)
