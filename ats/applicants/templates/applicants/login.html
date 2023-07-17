@@ -27,6 +27,16 @@
     {% endif %}
     <h3>Welcome to JBS Applicant Portal</h3>
     <h2>Please Login</h2>
+        {% if login_form.errors %}
+            <div class="alert alert-danger">
+            <strong>Oops! We got the following errors:</strong>
+            <ul>
+                {% for error in job_form.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            </div>
+        {% endif %}
         <form action="{% url 'applicants:login' %}" method="POST" class="container">
             {% csrf_token %}
             <div class="row">

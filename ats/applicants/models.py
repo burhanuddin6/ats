@@ -312,26 +312,6 @@ class Education(models.Model):
         # validators=[(lambda x: x >= 1950), (lambda x: x <= datetime.date.today().year),],
     )
 
-#########################################################################p###############
-
-class Skill(models.Model):
-    """Candidate Skills Model
-    Related to Candidate_Application model
-    TODO: Make this model many to one with Candidate_Application
-    Candidate_Application can have multiple skills
-    """
-    skill_Name = models.CharField(
-        verbose_name="Skill Name",
-        max_length=128,
-        db_index=False,
-    )
-    certificate_File_Name = models.CharField(
-        verbose_name="File name for certificate related to the skill",
-        max_length=64,
-        null=True,
-        db_index=False
-    )
-    
 
 ########################################################################################
 
@@ -393,69 +373,6 @@ class Experience(models.Model):
 
 ########################################################################################
 
-class OptionalSchemeURLValidator(URLValidator):
-    """
-    URL Validator that allows URLs without a scheme
-    """
-    def __call__(self, value):
-        if '://' not in value:
-            # Validate as if it were https:// because these are known websites
-            value = 'https://' + value
-        super().__call__(value)
-
-class Platform(models.Model):
-    """Platforms defined by recruiters such as different profile websites such as LinkedIn, etc.
-    Related to Reference model
-    One to many relationship with Reference model
-
-    Args:
-        models (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    name = models.CharField(
-        verbose_name="Platform Name",
-        max_length=128,
-        db_index=False,
-    )
-    URL = models.CharField(
-        verbose_name="Platform URL",
-        max_length=128,
-        db_index=False,
-        validators=[OptionalSchemeURLValidator()],
-    )
-    def __str__(self):
-        return f"{str(self.name).capitalize()}"
-    def clean_URL(self):
-        if '://' not in self.URL:
-            # Validate as if it were https:// because these are known websites
-            self.URL = 'https://' + self.URL
-        return self.URL
-
-########################################################################################
-
-class Reference(models.Model):
-    """
-    Candidate References Model
-    Related to Candidate_Application model
-    Candidate_Application can have multiple references
-    TODO: Make this model many to one with Candidate_Application by adding a foreign key"""
-    # queryset choices for name
-    platform_ID = models.ForeignKey(
-        to=Platform,
-        on_delete=models.CASCADE,
-        db_index=True,
-        related_name="profiles",
-    )
-    profile_URL = models.CharField(
-        verbose_name="LinkedIn Profile URL",
-        max_length=128,
-        db_index=False,
-        validators=[OptionalSchemeURLValidator()]
-    )
-
-
 class Base_Job_Stage(PolymorphicModel):
     """
     Base Job Stage Model
@@ -503,7 +420,17 @@ class Base_Job_Stage(PolymorphicModel):
         auto_now_add=False,
         db_index=False,
     )
-    
+
+    ############ KNOWN BUG IN DJANGO POLYMORPHIC ############
+    """If this is not done, the polymorphic manager will not work
+    And Django will take all the child class objects as instance of a single child class
+    This causes horrific error when deleting objects
+    """
+    non_polymorphic = models.Manager()
+    class Meta:
+        base_manager_name = 'non_polymorphic'
+    ##########################################################
+
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
         if self.start_Date > self.end_Date:
@@ -513,15 +440,14 @@ class Base_Job_Stage(PolymorphicModel):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    @property
     def is_past(self):
         """ Returns True if the job stage is in the past """
         return self.end_Date > datetime.date.today()
-    @property
+    
     def is_current(self):
         """ Returns True if the job stage is in the present"""
         return self.start_Date <= datetime.date.today() <= self.end_Date
-    @property
+    
     def is_future(self):
         """ Returns True if the job stage is in the future"""
         return self.start_Date > datetime.date.today()
@@ -781,18 +707,6 @@ class Candidate_Application(models.Model):
         db_index=False,
         related_name="candidate_application"
     )
-    reference = models.ForeignKey(
-        to=Reference,
-        on_delete=models.CASCADE,
-        db_index=False,
-        related_name="candidate_application"
-    )
-    skills = models.ManyToManyField(
-        to=Skill,
-        db_index=False,
-        related_name="candidate_application",
-
-    )
     def __str__(self):
         return f"(Application:{self.application_ID}, Candidate:{self.candidate_ID})"
 
@@ -1014,3 +928,101 @@ class Candidate_Interview(models.Model):
     #             to_email=[self.candidate_ID.user.email,],
     #             fail_silently=False,
     #         )
+
+
+#########################################################################p###############
+
+class Skill(models.Model):
+    """Candidate Skills Model
+    Related to Candidate_Application model
+    TODO: Make this model many to one with Candidate_Application
+    Candidate_Application can have multiple skills
+    """
+    skill_Name = models.CharField(
+        verbose_name="Skill Name",
+        max_length=128,
+        db_index=False,
+    )
+    certificate_File_Name = models.CharField(
+        verbose_name="File name for certificate related to the skill",
+        max_length=64,
+        null=True,
+        db_index=False
+    )
+    candidate_Application_ID = models.ForeignKey(
+        to=Candidate_Application,
+        on_delete=models.CASCADE,
+        db_index=True,
+        related_name="skills"
+    )
+
+
+########################################################################################
+
+class OptionalSchemeURLValidator(URLValidator):
+    """
+    URL Validator that allows URLs without a scheme
+    """
+    def __call__(self, value):
+        if '://' not in value:
+            # Validate as if it were https:// because these are known websites
+            value = 'https://' + value
+        super().__call__(value)
+
+class Platform(models.Model):
+    """Platforms defined by recruiters such as different profile websites such as LinkedIn, etc.
+    Related to Reference model
+    One to many relationship with Reference model
+
+    Args:
+        models (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    name = models.CharField(
+        verbose_name="Platform Name",
+        max_length=128,
+        db_index=False,
+    )
+    URL = models.CharField(
+        verbose_name="Platform URL",
+        max_length=128,
+        db_index=False,
+        validators=[OptionalSchemeURLValidator()],
+    )
+    def __str__(self):
+        return f"{str(self.name).capitalize()}"
+    def clean_URL(self):
+        if '://' not in self.URL:
+            # Validate as if it were https:// because these are known websites
+            self.URL = 'https://' + self.URL
+        return self.URL
+
+########################################################################################
+
+class Reference(models.Model):
+    """
+    Candidate References Model
+    Related to Candidate_Application model
+    Candidate_Application can have multiple references
+    TODO: Make this model many to one with Candidate_Application by adding a foreign key"""
+    # queryset choices for name
+    platform_ID = models.ForeignKey(
+        to=Platform,
+        on_delete=models.CASCADE,
+        db_index=True,
+        related_name="profiles",
+    )
+    profile_URL = models.CharField(
+        verbose_name="LinkedIn Profile URL",
+        max_length=128,
+        db_index=False,
+        validators=[OptionalSchemeURLValidator()]
+    )
+    candidate_Application_ID = models.ForeignKey(
+        to=Candidate_Application,
+        on_delete=models.CASCADE,
+        db_index=True,
+        related_name="references"
+    )

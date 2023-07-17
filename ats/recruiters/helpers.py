@@ -330,15 +330,21 @@ def get_candidate_context(candidate_id):
     candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
         
     # needs to change when I change the model
-    references = [
-        candidate.candidate_application.reference.profile_URL,
-    ]
+    references = []
+    for ref in candidate.candidate_application.references.all():
+        references.append(
+            (
+                ref.platform_ID.name,
+                ref.profile_URL
+            )
+        )
+    
     job = candidate.candidate_application.application_ID.job_ID
     
     skills = []
     for i,skill in enumerate(candidate.candidate_application.skills.all()):
         path = get_candidate_file_path(candidate_id, skill.certificate_File_Name)
-        form = [("Skill", skill.skill_Name, False), ("Certificate", path, True)]
+        form = (skill.skill_Name, path)
         skills.append(form)
     
     education_data = candidate.candidate_application.education
@@ -347,12 +353,13 @@ def get_candidate_context(candidate_id):
             education_data.ed_Level = verbose
             break
     education = a_forms.CandidateEducationForm(model_to_dict(education_data))
-    from django import forms
+
     experience = a_forms.CandidateExperienceForm(model_to_dict(candidate.candidate_application.experience))
     job_Slip = get_candidate_file_path(candidate_id, candidate.candidate_application.experience.job_Slip_File_Name)
     
     photo = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.photo_File_Name)
     resume = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.resume_File_Name)
+    
     return {
         'heading': candidate.first_Name + ' ' + candidate.last_Name,
         'job': job,

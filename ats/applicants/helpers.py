@@ -62,7 +62,6 @@ def save_application_data(request, applicant_id, job_id):
         application_ID=application,
         status=a_models.Candidate_Application.UNDECIDED
     )
-    print(request.POST)
     profile_form = a_forms.CandidateProfileForm(request.POST, request.FILES)
     education_form = a_forms.CandidateEducationForm(request.POST)
     experience_form = a_forms.CandidateExperienceForm(request.POST, request.FILES)
@@ -100,7 +99,6 @@ def save_application_data(request, applicant_id, job_id):
     profile.save()
     candidate_application.profile = profile
     
-    
     education = education_form.save(commit=False)
     education.application_ID = application
     education.save()
@@ -115,7 +113,8 @@ def save_application_data(request, applicant_id, job_id):
     experience.save()
     candidate_application.experience = experience
     
-    skill_list = []
+    candidate_application.save()
+
     for skill_form in skills_formset:
         if skill_form.is_valid():
             skill = skill_form.save(commit=False)
@@ -129,18 +128,15 @@ def save_application_data(request, applicant_id, job_id):
                 skill_form.cleaned_data.get('certificate'),
                 candidate.candidate_ID,
             )
+            skill.candidate_Application_ID = candidate_application
+            skill.certificate_File_Name = skill_form.cleaned_data.get('certificate').name
             skill.save()
-            skill_list.append(skill)
-    
+
     references = references_formset.save(commit=False)
     for reference in references:
         reference.application_ID = application
+        reference.candidate_Application_ID = candidate_application
         reference.save()
-        candidate_application.reference = reference
-        break
-    
-    candidate_application.save()
-    candidate_application.skills.add(*skill_list)
     
     return True, None
 

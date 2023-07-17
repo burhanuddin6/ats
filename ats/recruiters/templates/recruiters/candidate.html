@@ -30,7 +30,19 @@
 
 <!-- A column for personal information and picture -->
 <div class="container">
-    applied to : {{ job.title }}
+    
+    <div class="container form-wrapper">
+        <h3>Application Information</h3>
+        <div class="row block">
+            <div class="col-md-4 label">
+                <p>Job Applied</p>
+            </div>
+            <div class="col-md-8">
+                {{ job.title }}
+            </div>
+
+        </div>
+    </div>
     <div class="container form-wrapper">
         <h3>Candidate Information</h3>
         {% for field in profile %}
@@ -52,11 +64,14 @@
     </div>
     
     <div class="container form-wrapper">
-        <h3>Profiles</h3>
-        {% for reference in references %}
+        <h3>References</h3>
+        {% for ref_platform, ref_link in references %}
             <div class="row block">
+                <div class="col-md-4 label">
+                    {{ ref_platform }}
+                </div>
                 <div class="col-md-8">
-                    <a href="{{reference}}">{{ reference }}</a>
+                    <a href="{{ref_link}}">Profile</a>
                 </div>
             </div>
         {% endfor %}
@@ -98,26 +113,18 @@
 
     <div class="container form-wrapper">
         <h3>Skills</h3>
-        {% for skill in skills %}
-            <div class="container">
-                {% for name, data, is_file in skill %}
-                    <div class="row block">
-                        <div class="col-md-4 label">
-                            {{ name }}
-                        </div>
-                        {% if is_file %}
-                            <div class="col-md-8">
-                                <a href="{% get_media_prefix %}{{ data }}">Certificate</a>
-                            </div>
-                        {% else %}
-                            <div class="col-md-8">
-                                {{ data }}
-                            </div>
-                        {% endif %}
+        <div class="container">
+            {% for name, cert_path in skills %}
+                <div class="row block">
+                    <div class="col-md-4 label">
+                        {{ name }}
                     </div>
-                {% endfor %}
-            </div>
-        {% endfor %}
+                    <div class="col-md-8">
+                        <a href="{% get_media_prefix %}{{ cert_path }}">Certificate</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
 

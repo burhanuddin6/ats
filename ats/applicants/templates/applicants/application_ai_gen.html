@@ -49,6 +49,25 @@
                         <input type="text" name="first_Name" value="{{ user.email }}" class="input-field inactive" disabled>
                     </div>
                 </div>
+                {% if profile_form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Oops! We got the following errors:</strong>
+                        <ul>
+                            {% for field in profile_form %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {% for error in profile_form.non_field_errors %}
+                            <li>
+                                {{ error|escape }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 {% for field in profile_form %}
                     <div class="col-md-6">
                         {% get_class field.field.widget.input_type "input-field-parent" as parent_class %}
@@ -68,11 +87,31 @@
             </div>
 
         </div>
+        
         <div class="container-fluid form-wrapper">
             <h2>References</h2>
             {{ references_formset.management_form }}
             <div id="references-form_set" class="container">
                 {% for form in references_formset.forms %}
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Oops! We got the following errors:</strong>
+                            <ul>
+                                {% for field in form %}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <li>
+                                    {{ error|escape }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                     <div id="{{form.prefix}}" class="formset-form row">
                         <table class="no_error">
                             <div class="col-md-6">
@@ -130,6 +169,25 @@
         <div class="container-fluid form-wrapper">
             <h2>Education</h2>
             <div class="row">
+                {% if education_form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Oops! We got the following errors:</strong>
+                        <ul>
+                            {% for field in education_form %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {% for error in education_form.non_field_errors %}
+                            <li>
+                                {{ error|escape }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 {% for field in education_form %}
                     <div class="col-md-6">
                         {% get_class field.field.widget.input_type "input-field-parent" as parent_class %}
@@ -144,6 +202,25 @@
         <div class="container-fluid form-wrapper">
             <h2>Experience</h2>
             <div class="row">
+                {% if experience_form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Oops! We got the following errors:</strong>
+                        <ul>
+                            {% for field in experience_form %}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {% for error in experience_form.non_field_errors %}
+                            <li>
+                                {{ error|escape }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 {% for field in experience_form %}
                     <div class="col-md-6">
                         {% get_class field.field.widget.input_type "input-field-parent" as parent_class %}
@@ -169,6 +246,27 @@
             {{ skills_formset.management_form }}
             <div id="skills-form_set" class="container">
                 {% for form in skills_formset.forms %}
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Oops! We got the following errors:</strong>
+                            <ul>
+                                {% for field in form %}
+                                    {% if field.errors %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% for error in form.non_field_errors %}
+                                <li>
+                                    {{ error|escape }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
                     <div id="{{form.prefix}}" class="formset-form row">
                         <table class="no_error">
                             <div class="col-md-6">

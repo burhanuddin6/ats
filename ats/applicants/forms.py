@@ -146,19 +146,27 @@ class CandidateProfileForm(forms.ModelForm):
             'date_Of_Birth': forms.DateInput(attrs={'type': 'date'}),
         }
     def clean_photo(self):
-        photo = self.cleaned_data.get("photo")
-        check_file_name_size(photo, settings.SMALL_FILE_SIZE, rename=True, rename_to='photo')
-        self.photo_File_Name = photo.name
-        print('filename',self.photo_File_Name)
-        print('Hello')
-        return photo
+        try:
+            photo = self.cleaned_data.get("photo")
+            check_file_name_size(photo, settings.SMALL_FILE_SIZE, rename=True, rename_to='photo')
+            self.photo_File_Name = photo.name
+            print('filename',self.photo_File_Name)
+            print('Hello')
+            return photo
+        except:
+            raise forms.ValidationError("Image File type is not supported. Supported file types are:\n" + 
+                        '\n'.join([str(x) for x in (
+                            settings.IMAGE_FILE_TYPES
+                )]))
     def clean_resume(self):
-        resume = self.cleaned_data.get("resume")
-        print('hweoeir')
-        check_file_name_size(resume, settings.LARGE_FILE_SIZE, rename=True, rename_to='resume')
-        self.resume_File_Name = resume.name
-        print('Hello')
-        return resume
+        try:
+            resume = self.cleaned_data.get("resume")
+            check_file_name_size(resume, settings.LARGE_FILE_SIZE, rename=True, rename_to='resume')
+            self.resume_File_Name = resume.name
+            print('Hello')
+            return resume
+        except:
+            raise forms.ValidationError("Resume File type not supported. Supported file type(s) are .pdf")
 
 class CandidateEducationForm(forms.ModelForm):
     class Meta:
@@ -182,7 +190,7 @@ class CandidateSkillsForm(forms.ModelForm):
     )
     class Meta:
         model = a_models.Skill
-        exclude = ['application_ID', 'certificate_File_Name']
+        exclude = ['application_ID', 'certificate_File_Name', 'candidate_Application_ID']
     def clean_certificate(self):
         certificate = self.cleaned_data.get("certificate")
         check_file_name_size(
@@ -276,7 +284,7 @@ class CandidateDocumentsForm(forms.Form):
 class CandidateReferencesForm(forms.ModelForm):
     class Meta:
         model = a_models.Reference
-        exclude = ['application_ID']
+        exclude = ['candidate_Application_ID']
         widgets = {
             'platform_ID': forms.Select(attrs={'class': 'form-control'}),
             'profile_URL': forms.TextInput(attrs={'class': 'form-control'}),
