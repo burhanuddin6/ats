@@ -148,8 +148,14 @@ def apply_for_job(request, job_id):
 
 def application(request, applicant_id):
     if request.method == "POST":
-        a_helpers.save_application_data(request, applicant_id, request.session['job_id'])
-        return HttpResponse("Application saved successfully.")
+        success, forms_dict = a_helpers.save_application_data(request, applicant_id, request.session['job_id'])
+        if success:
+            return HttpResponse("Application saved successfully.")
+        else:
+            forms_dict['applicant_id'] = applicant_id
+            forms_dict['applicant'] = a_models.Candidate.objects.get(pk=applicant_id)
+            forms_dict['user'] = request.user
+            return render(request, 'applicants/application_ai_gen.html', forms_dict)
     if request.method == "GET":
         for form in a_forms.CandidateReferencesFormSet(
                 queryset=a_models.Reference.objects.none(),

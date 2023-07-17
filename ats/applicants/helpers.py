@@ -42,7 +42,18 @@ def create_candidate(email,password,first_Name,last_Name):
     candidate.save()
 
 def save_application_data(request, applicant_id, job_id):
-    print(applicant_id)
+    """Takes in request and processes all the forms and formsets in the application page
+
+    Args:
+        request (_type_): http POST request
+        applicant_id (_type_): candidate_ID of the Candidate
+        job_id (_type_): id of the Job
+
+    Returns:
+        if all forms and formsets are valid, returns True and None
+        if any form or formset is invalid, returns False and a dictionary of the forms and formsets
+    """
+
     candidate = a_models.Candidate.objects.get(pk=applicant_id)
     job = a_models.Job.objects.get(pk=job_id)
     application = a_models.Application.objects.get(job_ID=job)
@@ -58,79 +69,80 @@ def save_application_data(request, applicant_id, job_id):
     skills_formset = a_forms.CandidateSkillsFormSet(request.POST, request.FILES, prefix='skills')
     # extract formset from request.POST
     references_formset = a_forms.CandidateReferencesFormSet(request.POST, prefix='references')
-    print(references_formset)
-    if profile_form.is_valid():
-        profile = profile_form.save(commit=False)
-        a_forms.store_candidate_files(
-            profile_form.cleaned_data.get('photo'), 
-            candidate.candidate_ID)
-        a_forms.store_candidate_files(
-            profile_form.cleaned_data.get('resume'), 
-            candidate.candidate_ID)
-        profile.application_ID = application
-        profile.photo_File_Name = profile_form.cleaned_data.get('photo').name
-        profile.resume_File_Name = profile_form.cleaned_data.get('resume').name
-        profile.save()
-        candidate_application.profile = profile
-    else:
-        print(profile_form.errors)
-        raise InvalidFormException("Invalid form")
     
-    if education_form.is_valid():
-        education = education_form.save(commit=False)
-        education.application_ID = application
-        education.save()
-        candidate_application.education = education
+    if all([
+        profile_form.is_valid(),
+        education_form.is_valid(),
+        experience_form.is_valid(),
+        skills_formset.is_valid(),
+        references_formset.is_valid()
+    ]):
+        pass
     else:
-        raise InvalidFormException("Invalid form")
+        return False, {
+            'profile_form': profile_form,
+            'education_form': education_form,
+            'experience_form': experience_form,
+            'skills_formset': skills_formset,
+            'references_formset': references_formset
+        }
     
-    if experience_form.is_valid():
-        experience = experience_form.save(commit=False)
-        experience.application_ID = application
-        a_forms.store_candidate_files(
-            experience_form.cleaned_data.get('job_Slip'), 
-            candidate.candidate_ID)
-        experience.job_Slip_File_Name = experience_form.cleaned_data.get('job_Slip').name
-        experience.save()
-        candidate_application.experience = experience
-    else:
-        raise InvalidFormException("Invalid form")
+    profile = profile_form.save(commit=False)
+    a_forms.store_candidate_files(
+        profile_form.cleaned_data.get('photo'), 
+        candidate.candidate_ID)
+    a_forms.store_candidate_files(
+        profile_form.cleaned_data.get('resume'), 
+        candidate.candidate_ID)
+    profile.application_ID = application
+    profile.photo_File_Name = profile_form.cleaned_data.get('photo').name
+    profile.resume_File_Name = profile_form.cleaned_data.get('resume').name
+    profile.save()
+    candidate_application.profile = profile
+    
+    
+    education = education_form.save(commit=False)
+    education.application_ID = application
+    education.save()
+    candidate_application.education = education
+    
+    experience = experience_form.save(commit=False)
+    experience.application_ID = application
+    a_forms.store_candidate_files(
+        experience_form.cleaned_data.get('job_Slip'), 
+        candidate.candidate_ID)
+    experience.job_Slip_File_Name = experience_form.cleaned_data.get('job_Slip').name
+    experience.save()
+    candidate_application.experience = experience
     
     skill_list = []
-    if skills_formset.is_valid():
-        for skill_form in skills_formset:
-            if skill_form.is_valid():
-                skill = skill_form.save(commit=False)
-                a_forms.check_file_name_size(
-                    skill_form.cleaned_data.get('certificate'),
-                    5*1024*1024,
-                    rename=True,
-                    rename_to=str(skill_form.prefix)
-                )
-                a_forms.store_candidate_files(
-                    skill_form.cleaned_data.get('certificate'),
-                    candidate.candidate_ID,
-                )
-                skill.save()
-                skill_list.append(skill)
-    else:
-        raise InvalidFormException("Invalid form")
+    for skill_form in skills_formset:
+        if skill_form.is_valid():
+            skill = skill_form.save(commit=False)
+            a_forms.check_file_name_size(
+                skill_form.cleaned_data.get('certificate'),
+                5*1024*1024,
+                rename=True,
+                rename_to=str(skill_form.prefix)
+            )
+            a_forms.store_candidate_files(
+                skill_form.cleaned_data.get('certificate'),
+                candidate.candidate_ID,
+            )
+            skill.save()
+            skill_list.append(skill)
     
-    if references_formset.is_valid():
-        references = references_formset.save(commit=False)
-        for reference in references:
-            reference.application_ID = application
-            reference.save()
-            candidate_application.reference = reference
-            break
-    else:
-        for form in references_formset:
-            print(form.as_table())
-        raise InvalidFormException("Invalid form")
-
+    references = references_formset.save(commit=False)
+    for reference in references:
+        reference.application_ID = application
+        reference.save()
+        candidate_application.reference = reference
+        break
+    
     candidate_application.save()
     candidate_application.skills.add(*skill_list)
-    return True
+    
+    return True, None
 
 def is_candidate(user):
     if user.is_authenticated:

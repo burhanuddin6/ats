@@ -2,8 +2,7 @@
 {% load static %}
 
 {% block head %}
-    <link href="{% static 'recruiters/styles-job.css' %}" rel="stylesheet">
-    <link href="{% static 'recruiters/styles-candidates.css' %}" rel="stylesheet">
+    <link href="{% static 'applicants/css/job_card.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block head_content %}
@@ -15,36 +14,34 @@
 {% endblock %}
 
 {% block content %}
-  <ul>
-      <div class="container">
+ 	<div class="container">
+		<div class="row">
+			{% for job in jobs %}
+				<div class="col-md-4">
+					<a href="{% url 'recruiters:job' job.id %}">
+						<div class="card-parent">
+							<div class="card" id="cardContainer">
+							  <img class="card-child" alt="" src="{% static 'recruiters/career-search.png' %}" />
+				  
+							  <div class="card-text-container">
+							  <div class="card-title-parent">
+								  <div class="card-title">
+								  {{ job.title }}
+								  </div>
+								  <div class="card-description">
+								  {{ job.overview| safe | slice:":150"}}...
+								  </div>
+							  </div>
+							  <div class="card-price-tag">
+								  {{ job.salary_Range }}
+							  </div>
+							  </div> <!-- card-text-container -->
+							</div> <!-- card -->
+						</div>
+					</a> 
+				</div>
+		  {% endfor %}
 
-          {% for job in jobs %}
-              {% if forloop.counter0|divisibleby:3 %} <div class="row z-center cards"> {%  endif %}
-                  <div class="col-md-4">
-                      <div class="card-parent">
-                          <a href="{% url 'recruiters:job' job.id %}">
-                              <div class="card" id="cardContainer">
-                                  <img class="card-child" alt="" src="{% static 'recruiters/icon-candidates.png' %}" />
-                        
-                                  <div class="card-text-container">
-                                    <div class="card-title-parent">
-                                      <div class="card-title">
-                                        {{ job.title }}
-                                      </div>
-                                      <div class="card-description">
-                                        {{ job.description | slice:":180"}}...
-                                      </div>
-                                    </div>
-                                    <div class="card-price-tag">
-                                      {{ job.salary_Range }}
-                                    </div>
-                                  </div> <!-- card-text-container -->
-                              </div> <!-- card -->
-                          </a> 
-                      </div> <!-- card-parent -->
-                  </div> <!-- col-md-4 -->
-              {%  if forloop.counter|divisibleby:3 or forloop.last %}</div><!-- row closing --><hr>{%  endif %}
-          {% endfor %}
-      </div> <!-- container -->
-  </ul>
+		</div>
+    </div> <!-- container -->
 {% endblock %}

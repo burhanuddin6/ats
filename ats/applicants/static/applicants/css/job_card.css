@@ -65,8 +65,6 @@
     box-sizing: border-box;
   }
   .card {
-    right: 66.16%;
-    left: 14.29%;
     cursor: pointer;
     text-align: left;
   }
@@ -75,8 +73,13 @@
     font-size: var(--heading-s-size);
     color: var(--neutral-100);
     font-family: var(--text-s-regular);
+    width: 150px;
+    height: 500px;
+    margin: 10px;
   }
 /* ***************** */
-.row.cards{
-  height: 500px;
+
+.col{
+  height: fit-content;
+  width: fit-content;
 }

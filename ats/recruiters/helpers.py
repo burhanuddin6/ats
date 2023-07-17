@@ -265,30 +265,27 @@ def search_candidates(request, SEARCH_TYPES):
         for term in search_term.split(' '):
             candidates = a_models.Candidate.objects.filter (
                 Q (first_Name__icontains=term) | Q (last_Name__icontains=term)
-            ).values()
+            )
     if int(search_by) == SEARCH_TYPES['skills']['value']:
         candidates = a_models.Candidate.objects.filter (
             candidate_application__skills__skill_Name__icontains=search_term
-        ).values()
+        )
     if int(search_by) == SEARCH_TYPES['experience']['value']:
         candidates = a_models.Candidate.objects.filter (
             candidate_application__experience__job_Title__icontains = search_term
-        ).values().union(a_models.Candidate.objects.filter(
+        ).union(a_models.Candidate.objects.filter(
                             candidate_application__experience__company_Name__icontains=search_term)
-                            .values()
-                        ) 
+                        )
     if int(search_by) == SEARCH_TYPES['education']['value']:
         candidates = a_models.Candidate.objects.filter (
             candidate_application__education__field_Name__icontains = search_term
-        ).values().union(a_models.Candidate.objects.filter (
+        ).union(a_models.Candidate.objects.filter (
                             candidate_application__education__institute_Name__icontains=search_term)
-                            .values()
                         )
     if int(search_by) == SEARCH_TYPES['job_applied']['value']:
         candidates = a_models.Candidate.objects.filter(
-            candidate_application__application_ID__job_ID__title__icontains = search_term).values()
-    candidates = filter_valid_candidates(candidates)
-    return list(candidates)
+            candidate_application__application_ID__job_ID__title__icontains = search_term)
+    return filter_valid_candidates(candidates)
 
 
 def schedule_interviews():
