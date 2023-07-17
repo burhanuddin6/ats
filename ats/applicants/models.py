@@ -423,6 +423,11 @@ class Platform(models.Model):
     )
     def __str__(self):
         return f"{str(self.name).capitalize()}"
+    def clean_URL(self):
+        if '://' not in self.URL:
+            # Validate as if it were https:// because these are known websites
+            self.URL = 'https://' + self.URL
+        return self.URL
 
 ########################################################################################
 

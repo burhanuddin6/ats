@@ -6,10 +6,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django import template
 from django.utils import timezone
-from django.forms.models import model_to_dict
+
 from applicants import models as a_models
 from applicants import helpers as a_helpers
-from applicants import forms as a_forms
 
 from . import forms as r_forms
 from . import helpers as r_helpers
@@ -425,10 +424,9 @@ def candidate(request, candidate_id):
         request (object): HttpRequest
         candidate_id (int): candidate id
     """
-    candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
-    return render(request, 'recruiters/div_candidate.html', {
-        'heading': candidate.first_Name,
-        'user': request.user,
-        'candidate': candidate,
-        'profile': a_forms.CandidateProfileForm(model_to_dict(candidate.candidate_application.profile)),
-    })
+    if request.method == 'POST':
+        pass
+    else:
+        return render(request, 'recruiters/candidate.html', 
+            r_helpers.get_candidate_context(candidate_id)
+        )

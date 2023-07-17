@@ -1,3 +1,7 @@
+from django.conf import settings
+from django.forms.models import model_to_dict
+
+from applicants import forms as a_forms
 from applicants import models as a_models
 from recruiters import forms as r_forms
 
@@ -307,3 +311,47 @@ def add_approved_cand_from_prev_stage(job_id):
         stage=new_stage,
         candidates=candidates
     )
+
+def get_candidate_file_path(candidate_id, file_name):
+    return 'candidate_documents/' + str(candidate_id) + '/' + str(file_name)
+
+def get_candidate_context(candidate_id):
+    candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
+        
+    # needs to change when I change the model
+    references = [
+        candidate.candidate_application.reference.profile_URL,
+    ]
+    job = candidate.candidate_application.application_ID.job_ID
+    
+    skills = []
+    for i,skill in enumerate(candidate.candidate_application.skills.all()):
+        path = get_candidate_file_path(candidate_id, skill.certificate_File_Name)
+        form = [("Skill", skill.skill_Name, False), ("Certificate", path, True)]
+        skills.append(form)
+    
+    education_data = candidate.candidate_application.education
+    for i, verbose in a_models.Education.EDUCATION_LEVEL_CHOICES:
+        if i == education_data.ed_Level:
+            education_data.ed_Level = verbose
+            break
+    education = a_forms.CandidateEducationForm(model_to_dict(education_data))
+    from django import forms
+    experience = a_forms.CandidateExperienceForm(model_to_dict(candidate.candidate_application.experience))
+    job_Slip = get_candidate_file_path(candidate_id, candidate.candidate_application.experience.job_Slip_File_Name)
+    
+    photo = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.photo_File_Name)
+    resume = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.resume_File_Name)
+    return {
+        'heading': candidate.first_Name,
+        'job': job,
+        'candidate': candidate,
+        'profile': a_forms.CandidateProfileForm(model_to_dict(candidate.candidate_application.profile)),
+        'references': references,
+        'education': education,
+        'experience': experience,
+        'skills': skills,
+        'job_Slip': job_Slip,
+        'photo': photo,
+        'resume': resume,
+    }
