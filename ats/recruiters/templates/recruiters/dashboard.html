@@ -10,21 +10,51 @@
     <link href="{% static 'recruiters/styles-candidates.css' %}" rel="stylesheet">
     <link href="{% static 'recruiters/styles-modal.css' %}" rel="stylesheet">
     <link href="{% static 'recruiters/styles-search.css' %}" rel="stylesheet">
+    <style>
+        .block-wrapper {
+    width:fit-content;
+    padding: 50px 0;
+    /* vertical align */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .block.title {
+        float:left;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .block
+    {
+        float:right;
+    }
+    .block + .block {
+        margin-left: 20px;
+    }
+    </style>
 {% endblock %}
 
 {% block content %}
     {% include "recruiters/div_modal_email.html" %}
-    <form action="" id="search_form" data-URL="{% url 'recruiters:search_candidates' %}">
-        <div class="search-box">
-            <img class="search-icon" alt="" src="{% static 'recruiters/icon-search.svg' %}" />
-            <input class="search-your-team" type="text" name="search" id="search_query" placeholder="Search">
+    <form action="" id="search_form" data-URL="{% url 'recruiters:search_candidates' %}" class="block-wrapper">
+        <div class="block title">
+            <div class="search-box">
+                <img class="search-icon" alt="" src="{% static 'recruiters/icon-search.svg' %}" />
+                <input class="search-your-team" type="text" name="search" id="search_query" placeholder="Search">
+            </div>
+            <input type="submit" value="Search" style="display: none;" id="search_button">
         </div>
-        <input type="submit" value="Search" style="display: none;" id="search_button">
-        <select id="search_type">
-            {% for type in search_types %}
-                <option value="{{ type.value }}">{{ type.verbose_name }}</option>
-            {% endfor %}
-        </select>
+        <div class="block">
+            <select id="search_type">
+                {% for type in search_types %}
+                    <option value="{{ type.value }}">{{ type.verbose_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </form>
     <div id="search_results">
         {% include "recruiters/div_candidates.html" %}

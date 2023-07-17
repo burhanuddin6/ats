@@ -20,10 +20,9 @@ def check_stage_overlap(job_id, start_Date, end_Date, stage_name):
     return (True, "", "")
 
 def get_job_context(job_id, stage_id, stage_name):
-
     job = a_models.Job.objects.get(pk=job_id)
     stages = { 
-        'application': [job], 
+        'application': a_models.Application.objects.get(job_ID=job), 
         'test': list(a_models.Test.objects.filter(job_ID=job).order_by('start_Date')), 
         'interview': list(a_models.Interview.objects.filter(job_ID=job).order_by('start_Date'))}
     
@@ -99,9 +98,9 @@ def get_job_context(job_id, stage_id, stage_name):
         'interview_stages': stages['interview'],
         'active_stage_name': stage_name,
         'active_stage_id': stage_id,
-        'undecided_candidates': undecided_candidates,
-        'accepted_candidates': accepted_candidates,
-        'rejected_candidates': rejected_candidates,
+        'undecided_candidates': filter_valid_candidates(undecided_candidates),
+        'accepted_candidates': filter_valid_candidates(accepted_candidates),
+        'rejected_candidates': filter_valid_candidates(rejected_candidates),
     }
 
 def is_ajax(request):
@@ -235,6 +234,21 @@ def create_job(request):
     application.save()
     
 
+def filter_valid_candidates(candidates):
+    """Filters candidates that are valid for the job.
+
+    Args:
+        candidates (QuerySet): QuerySet of candidates
+
+    Returns:
+        QuerySet: QuerySet of valid candidates
+    """
+    valid_candidates = []
+    for candidate in candidates:
+        if hasattr(candidate, 'candidate_application'):
+            valid_candidates.append(candidate)
+    return valid_candidates
+
 def search_candidates(request, SEARCH_TYPES):
     # TODO
     # add search by skills, experience, education, current_company
@@ -273,7 +287,7 @@ def search_candidates(request, SEARCH_TYPES):
     if int(search_by) == SEARCH_TYPES['job_applied']['value']:
         candidates = a_models.Candidate.objects.filter(
             candidate_application__application_ID__job_ID__title__icontains = search_term).values()
-    print(candidates)
+    candidates = filter_valid_candidates(candidates)
     return list(candidates)
 
 
@@ -343,7 +357,7 @@ def get_candidate_context(candidate_id):
     photo = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.photo_File_Name)
     resume = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.resume_File_Name)
     return {
-        'heading': candidate.first_Name,
+        'heading': candidate.first_Name + ' ' + candidate.last_Name,
         'job': job,
         'candidate': candidate,
         'profile': a_forms.CandidateProfileForm(model_to_dict(candidate.candidate_application.profile)),

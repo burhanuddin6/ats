@@ -1,5 +1,6 @@
 from django import forms
 from applicants import models as a_models
+from ckeditor.widgets import CKEditorWidget
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -33,10 +34,9 @@ class JobCreationForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Enter Job Title',
             }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter Job Description',
-            }),
+            'overview': CKEditorWidget(),
+            'responsibilities': CKEditorWidget(),
+            'qualifications': CKEditorWidget(),
             'salary_Range': forms.Select(attrs={
                 'class': 'form-control',
             }),

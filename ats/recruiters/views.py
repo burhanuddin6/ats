@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -87,7 +87,7 @@ def dashboard(request):
     return render(request, 'recruiters/dashboard.html', {
         'heading': 'Dashboard',
         'user': request.user,
-        'candidates': a_models.Candidate.objects.all(),
+        'candidates': r_helpers.filter_valid_candidates(a_models.Candidate.objects.all()),
         'search_types': SEARCH_TYPES.values(),
         'email_form': r_forms.EmailCandidateForm(),
     })
@@ -185,7 +185,6 @@ def create_job(request):
                 'application_form': r_forms.JobApplicationForm(),
             })
     form = r_forms.JobCreationForm()
-    print(form.fields['description'].widget.__class__.__name__) 
     if request.method == "GET":
         return render(request, 'recruiters/create_job.html', {
             'heading': 'Create Job',
@@ -425,7 +424,7 @@ def candidate(request, candidate_id):
         candidate_id (int): candidate id
     """
     if request.method == 'POST':
-        pass
+        return Http404
     else:
         return render(request, 'recruiters/candidate.html', 
             r_helpers.get_candidate_context(candidate_id)

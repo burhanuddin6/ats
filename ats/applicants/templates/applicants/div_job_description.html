@@ -44,10 +44,9 @@
     <div class="row">
         <div class="col-md-8">
             <div class="description-block first">
-                <h3 style="font-weight: bold;">Description</h3>
+                <h3 style="font-weight: bold;">Overview</h3>
                 <div class="text">
-                    {{ job.description }}
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil ipsam necessitatibus saepe velit fugit deleniti illum, amet dolores porro inventore eveniet cumque adipisci accusantium consequuntur. Nostrum facilis aut quidem harum quibusdam ullam necessitatibus accusamus at eius amet deleniti obcaecati expedita, esse blanditiis nobis ipsum soluta doloremque facere qui omnis voluptate fuga corporis. Minima obcaecati recusandae magni maxime enim modi ipsa rem hic, quis dignissimos eos perspiciatis tempora nisi dolorum voluptatum ipsam incidunt id! Quisquam alias dignissimos dolorem nostrum reiciendis impedit iure distinctio laudantium quos placeat nam necessitatibus vitae eaque voluptatem repudiandae dicta earum nemo fugiat, ratione ipsum nobis ea in reprehenderit. Eaque blanditiis iste ea reprehenderit magnam doloremque quam tempora unde, accusantium impedit voluptatum? Molestiae perferendis omnis earum dolorum reiciendis quas placeat nihil voluptas quo. Qui rem est ex ab enim dolorem alias iste minima facilis quasi incidunt consequatur blanditiis natus omnis deleniti odio quisquam corrupti molestiae, quos dignissimos quo voluptas eveniet maxime sunt. Omnis vitae laborum neque? Voluptatum sit ratione iusto quasi mollitia, neque architecto magnam amet sint consequatur commodi voluptas. Debitis architecto magni mollitia perferendis, ipsa nulla cum rerum vitae velit dolorem id, laboriosam fugiat dolorum autem officiis tenetur blanditiis cumque repudiandae enim exercitationem animi illum doloremque. Eum?
+                    {{ job.overview|safe }}
                 </div>
             </div>
         </div>
@@ -55,15 +54,7 @@
             <div class="description-block second">
                 <h3 style="font-weight: bold;">Qualifications</h3>
                 <div class="text">
-                    <li>
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quasi libero odit quia esse cum aliquam, iste quidem praesentium vitae perferendis, mollitia voluptas beatae harum maiores officia tempora necessitatibus repellendus debitis in doloremque quos incidunt possimus facilis. Maiores veritatis, distinctio cum voluptatibus inventore beatae placeat, provident sed dolorem error vitae suscipit!
-                    </li>
-                    <li>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius eveniet nesciunt iste facere corrupti officia cumque minima! Quas suscipit odio voluptatem a hic vitae sed, quasi aperiam laboriosam, iusto fugiat, eos pariatur repellat id assumenda illo omnis necessitatibus cupiditate. Cum labore ex ducimus quae doloribus magnam enim dolores vel atque dolore doloremque, exercitationem laudantium, excepturi rem expedita deserunt nihil maxime!
-                    </li>
-                    <li>
-                        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Debitis ea, nihil voluptatibus repellendus doloribus facere maxime magni quos. Totam dolore, porro culpa ipsa laborum itaque voluptas autem voluptatibus nisi atque, animi ducimus molestias explicabo error asperiores ratione magnam fugiat aut!
-                    </li>
+                    {{ job.qualifications|safe }}
                 </div>
             </div>
         </div>
@@ -71,25 +62,7 @@
             <div class="description-block first">
                 <h3 style="font-weight: bold;">Responsibilites</h3>
                 <div class="text">
-                    <ul>
-                        <li>
-                            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex vero sint aperiam hic molestias, rerum quod dolores quis, incidunt quasi ab corrupti quae doloribus est culpa, ea ipsa similique vitae accusamus. Facilis ratione magnam delectus inventore! Harum maiores voluptates aliquam iste neque fuga quidem cumque quis fugit. Hic at minus cum, quia adipisci iste nisi, vitae ipsum, voluptas nesciunt impedit fugit. Nemo mollitia doloribus odit reprehenderit, praesentium harum ut facilis voluptates officiis perspiciatis veniam voluptate, quisquam animi quo eum labore magnam rem reiciendis possimus magni aspernatur! Illum voluptates nemo, enim dolore animi error alias. Doloremque labore distinctio inventore facere consequatur!
-                        </li>
-                        <li>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Neque eum ipsam, totam maiores cumque earum libero animi provident doloremque vel dicta nostrum dolores expedita accusamus, amet sunt? Tempore, iste ipsum!
-                        </li>
-                        <li>
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas voluptate molestiae saepe, iure obcaecati possimus? Accusantium impedit alias fugiat repellat deleniti, porro a deserunt, quia nisi ullam distinctio ut ducimus explicabo iste quis, incidunt quibusdam? A magni nemo sequi. Unde?
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="description-block first">
-                    <h3 style="font-weight: bold;">Description</h3>
-                    <div class="text">{{ job.description }}</div>
+                    {{ job.responsibilities|safe }}
                 </div>
             </div>
         </div>

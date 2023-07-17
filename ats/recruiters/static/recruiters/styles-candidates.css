@@ -4,7 +4,6 @@
     left: 82px;
     width: auto;
     height: auto;
-    cursor: pointer;
     border-radius: var(--br-sm);
     background-color: var(--t2);
 }

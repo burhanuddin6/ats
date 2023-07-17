@@ -167,7 +167,7 @@ h1{
     top:150px;
     width:auto;
     left:200px;
-    right:10px;
+    right:10px; 
 }
 
 
@@ -196,4 +196,8 @@ h1{
 
 .alert{
     z-index: 5;
+}
+
+a{
+    color:black;
 }

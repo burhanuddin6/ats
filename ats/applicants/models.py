@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.core.validators import URLValidator
 
 from polymorphic.models import PolymorphicModel
+from ckeditor.fields import RichTextField
 
 DAYS_OF_WEEK = {
     0: 'M',
@@ -146,11 +147,14 @@ class Job(models.Model):
         db_index=False,
         # validators=[(lambda x: len(x) <= 128),],
     )
-    description = models.TextField(
+    overview = RichTextField(
         verbose_name="Job Description",
-        db_index=False,
-        max_length=1024,
-        # validators=[(lambda x: len(x) <= 1024),],
+    )
+    responsibilities = RichTextField(
+        verbose_name="Job Responsibilities",
+    )
+    qualifications = RichTextField(
+        verbose_name="Job Qualifications",
     )
     _25 = '25,000 - 50,000'
     _50 = '50,000 - 75,000'

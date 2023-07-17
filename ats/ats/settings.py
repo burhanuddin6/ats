@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'widget_tweaks',
-    'polymorphic',
+    # third party apps
+    'widget_tweaks', # provides useful template tags/filters for css classes
+    'polymorphic', # polymorphic models
+    'ckeditor', # rich text box
+    # my apps
     'applicants',
     'recruiters',
 ]
@@ -139,7 +142,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 # EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'ba09ae@gmail.com'
-EMAIL_HOST_PASSWORD = 'hjkdatmjbjludyvl' #password associated with above email-id
+EMAIL_HOST_PASSWORD = 'xvxautvjoxidivsr'#'hjkdatmjbjludyvl' #password associated with above email-id
 DEFAULT_FROM_EMAIL = 'ba09ae@gmail.com'
 
 print(MEDIA_ROOT)

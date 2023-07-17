@@ -3,19 +3,21 @@
 <div class="row">
     {% for candidate in candidates %}
         <div class="col-md-4 candidate-box">
-            <div class="rectangle-parent" id="groupContainer">        
-                <div class="candidate-top">
-                    <div class="ellipse-icon">
-                        <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+            <div class="rectangle-parent" id="groupContainer">       
+                <a href="{% url 'recruiters:candidate' candidate.candidate_ID %}">
+                    <div class="candidate-top">
+                        <div class="ellipse-icon">
+                            <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+                        </div>
+                        <div class="name">
+                            <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
+                            <div class="applied-on">Appplied On 2nd June</div>
+                        </div>
+                        <div class="icon dots">
+                            <img alt="" src="{% static 'recruiters/icon-h-dots.svg' %}" />
+                        </div>
                     </div>
-                    <div class="name">
-                        <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
-                        <div class="applied-on">Appplied On 2nd June</div>
-                    </div>
-                    <div class="icon dots">
-                        <img alt="" src="{% static 'recruiters/icon-h-dots.svg' %}" />
-                    </div>
-                </div>
+                </a> 
                 
                 <div class="above-line">
                 </div>
