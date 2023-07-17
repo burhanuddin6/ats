@@ -15,11 +15,11 @@
 {% endblock %}
 
 {% block main %}
-    {% if login.errors %}
+    {% if login_form.errors %}
     <div class="alert alert-danger">
     <strong>Oops! We got the following errors:</strong>
     <ul>
-        {% for error in login.errors %}
+        {% for error in loginform.errors %}
         <li>{{ error }}</li>
         {% endfor %}
     </ul>

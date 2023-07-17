@@ -150,7 +150,7 @@ def application(request, applicant_id):
     if request.method == "POST":
         success, forms_dict = a_helpers.save_application_data(request, applicant_id, request.session['job_id'])
         if success:
-            return HttpResponse("Application saved successfully.")
+            return render(request, 'applicants/success.html')
         else:
             forms_dict['applicant_id'] = applicant_id
             forms_dict['applicant'] = a_models.Candidate.objects.get(pk=applicant_id)
