@@ -7,7 +7,7 @@ from django.contrib import messages
 from django import template
 from django.utils import timezone
 
-from applicants import models as a_models
+from applicants import models as a_models, DAYS_OF_WEEK
 from applicants import helpers as a_helpers
 
 from . import forms as r_forms
@@ -15,23 +15,14 @@ from . import helpers as r_helpers
 
 register = template.Library()
 
-DAYS_OF_WEEK = {
-    0: 'M',
-    1: 'T',
-    2: 'W',
-    3: 'H',
-    4: 'F',
-    5: 'S',
-    6: 'U'
-}
 
 # Create your views here.
 def index(request):
     if request.user.is_authenticated and a_helpers.is_recruiter(request.user):
         return HttpResponseRedirect(reverse('recruiters:dashboard'))
-    else:
-        messages.info(request, "Please login")
-        return HttpResponseRedirect(reverse('recruiters:login'))
+    
+    messages.info(request, "Please login")
+    return HttpResponseRedirect(reverse('recruiters:login'))
 
 def login_view(request):
     print(a_helpers.is_recruiter(request.user))
@@ -55,11 +46,11 @@ def login_view(request):
             login(request, user)
             messages.success(request, f"Welcome back {user.recruiter.first_Name}!")
             return HttpResponseRedirect(reverse('recruiters:index'))
-        else:
-            return render(request, 'recruiters/login.html', {
-                'login_form': r_forms.LoginForm(),
-                'message': "Invalid credentials"
-            })
+        
+        return render(request, 'recruiters/login.html', {
+            'login_form': r_forms.LoginForm(),
+            'message': "Invalid credentials"
+        })
     if request.method == "GET":
         if request.user.is_authenticated and a_helpers.is_recruiter(request.user):
             return HttpResponseRedirect(reverse('recruiters:dashboard'))
@@ -123,7 +114,7 @@ def job(request, job_id):
 
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
-def approve_candidate(request, job_id):
+def approve_candidate(request):
     """
     TODO if there exist a next stage then add candidate to that row with undecided status
     """
@@ -176,15 +167,16 @@ def create_job(request):
         try:
             r_helpers.create_job(request)
             return HttpResponseRedirect(reverse('recruiters:jobs'))
-        except Exception as e:
+        except Exception:
             messages.error(request, "Error creating job. Invalid data")
-            return render(request, 'recruiters/create_job.html', {
-                'heading': 'Create Job',
-                'user': request.user,
-                'job_form': r_forms.JobCreationForm(),
-                'application_form': r_forms.JobApplicationForm(),
-            })
-    form = r_forms.JobCreationForm()
+            
+        return render(request, 'recruiters/create_job.html', {
+            'heading': 'Create Job',
+            'user': request.user,
+            'job_form': r_forms.JobCreationForm(),
+            'application_form': r_forms.JobApplicationForm(),
+        })
+    
     if request.method == "GET":
         return render(request, 'recruiters/create_job.html', {
             'heading': 'Create Job',
@@ -225,8 +217,8 @@ def create_stage(request, job_id, stage_name):
         
         if not no_overlaps:
             messages.error(request, 
-                           "Error creating stage. Stage overlaps with {}.  \
-                           Date must be greater than {}".format(overlapping_stage, min_date))
+                           f"Error creating stage. Stage overlaps with {overlapping_stage}.  \
+                           Date must be greater than {min_date}")
         return render(request, 'recruiters/create_interview_stage.html', {
             'heading': heading,
             'user': request.user,
@@ -234,29 +226,32 @@ def create_stage(request, job_id, stage_name):
             'job': job,
             'stage_name': stage_name,
         })
-    else:
-        if stage_name == "interview":
-            new_form = r_forms.JobInterviewForm()
-        elif stage_name == "test":
-            new_form = r_forms.JobTestForm()
-        return render(request, 'recruiters/create_interview_stage.html', {
-            'heading': heading,
-            'user': request.user,
-            'stage_form': new_form,
-            'job': job,
-            'stage_name': stage_name,
-        })
+    
+    if stage_name == "interview":
+        new_form = r_forms.JobInterviewForm()
+    elif stage_name == "test":
+        new_form = r_forms.JobTestForm()
+    return render(request, 'recruiters/create_interview_stage.html', {
+        'heading': heading,
+        'user': request.user,
+        'stage_form': new_form,
+        'job': job,
+        'stage_name': stage_name,
+    })
 
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
 def search_candidates(request):
-    candidates = []
+    candidates_list = []
     try:
-        candidates = r_helpers.search_candidates(request, SEARCH_TYPES=SEARCH_TYPES)
+        candidates_list = r_helpers.search_candidates(
+            request, 
+            SEARCH_TYPES=SEARCH_TYPES
+        )
     except Exception as e:
         print(e)
     return render(request, 'recruiters/div_candidates.html', {
-        'candidates': candidates,
+        'candidates': candidates_list,
     })
 
 def create_interview_slots(request, job_id, stage_id):
@@ -268,7 +263,7 @@ def create_interview_slots(request, job_id, stage_id):
             r_forms.InterviewDailyTimeForm(request.POST, prefix=str(x)) for x in range(0,7)
         ]
         print(interview_daily_forms)
-        if slot_group_form.is_valid() and all([form.is_valid() for form in interview_daily_forms]):
+        if slot_group_form.is_valid() and all(form.is_valid() for form in interview_daily_forms):
             slot_group = slot_group_form.save(commit=False)
             slot_group.interview_ID = a_models.Interview.objects.get(id=stage_id)
             slot_group.save()
@@ -280,39 +275,39 @@ def create_interview_slots(request, job_id, stage_id):
             # now create interview slots.
             slot_group.create_interview_slots()
             return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))
-        else:
-            messages.error(request, "Error creating interview slots. Invalid data")
-            return render(request, 'recruiters/create_interview_slots.html', {
-                'heading': job.title,
-                'sub_heading': 'Create Interview Slots',
-                'user': request.user,
-                'job': job,
-                'stage': a_models.Interview.objects.get(id=stage_id),
-                'slot_group_form': slot_group_form,
-                'interview_daily_forms': interview_daily_forms,
-            })
-    else:
-        stage = a_models.Interview.objects.get(id=stage_id)
+        
+        messages.error(request, "Error creating interview slots. Invalid data")
         return render(request, 'recruiters/create_interview_slots.html', {
             'heading': job.title,
             'sub_heading': 'Create Interview Slots',
             'user': request.user,
             'job': job,
-            'stage': stage,
-            'slot_group_form': r_forms.InterviewSlotGroupForm(initial={'duration': stage.duration}),
-            'interview_daily_forms': [ 
-                r_forms.InterviewDailyTimeForm(
-                    initial = { 
-                        'day': value, 
-                        'check': True, 
-                        'start_Time': '09:00', 
-                        'end_Time': '17:00'
-                    }, 
-                    prefix=str(i)
-                )
-                for i, value in DAYS_OF_WEEK.items()
-            ],
+            'stage': a_models.Interview.objects.get(id=stage_id),
+            'slot_group_form': slot_group_form,
+            'interview_daily_forms': interview_daily_forms,
         })
+    
+    stage = a_models.Interview.objects.get(id=stage_id)
+    return render(request, 'recruiters/create_interview_slots.html', {
+        'heading': job.title,
+        'sub_heading': 'Create Interview Slots',
+        'user': request.user,
+        'job': job,
+        'stage': stage,
+        'slot_group_form': r_forms.InterviewSlotGroupForm(initial={'duration': stage.duration}),
+        'interview_daily_forms': [ 
+            r_forms.InterviewDailyTimeForm(
+                initial = { 
+                    'day': value, 
+                    'check': True, 
+                    'start_Time': '09:00', 
+                    'end_Time': '17:00'
+                }, 
+                prefix=str(i)
+            )
+            for i, value in DAYS_OF_WEEK.items()
+        ],
+    })
     
 @login_required
 @user_passes_test(a_helpers.is_recruiter)
@@ -425,7 +420,7 @@ def candidate(request, candidate_id):
     """
     if request.method == 'POST':
         return Http404
-    else:
-        return render(request, 'recruiters/candidate.html', 
-            r_helpers.get_candidate_context(candidate_id)
-        )
+    
+    return render(request, 'recruiters/candidate.html', 
+        r_helpers.get_candidate_context(candidate_id)
+    )
