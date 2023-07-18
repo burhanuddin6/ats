@@ -6,11 +6,8 @@ from django.test import TestCase, Client
 # import QuerySet
 from django.db.models.query import QuerySet
 
-from applicants import models as a_models
+from applicants import models as a_models, helpers as a_helpers, forms as a_forms, forms as r_forms
 from applicants.helpers import create_candidate
-from applicants import forms as a_forms
-from recruiters import forms as r_forms
-from applicants import helpers as a_helpers
 
 
 class CandidateTestCase(TestCase):
@@ -149,9 +146,10 @@ class RecruiterSiteTestCase(TestCase):
             response.status_code, 
             200, 
             "POST request to /recruiters/login should return status code 200.")
+        
         # login_form = r_forms.LoginForm({'username':recruiter.user.email, 'password': 'password'})
+        # logged_in = c.login(username=self.recruiter.user.username, password="password")
 
-        logged_in = c.login(username=self.recruiter.user.username, password="password")
         response = c.get('/recruiters/login')
         self.assertEqual(
             response.status_code, 
@@ -179,7 +177,7 @@ class RecruiterSiteTestCase(TestCase):
         )
         
         # A pretest to check that the recruiter is correctly defined in setUp
-        logged_in = c.login(username=self.recruiter.user.username, password="password")
+        # logged_in = c.login(username=self.recruiter.user.username, password="password")
         
         response = c.get('/recruiters/dashboard')
         self.assertTemplateUsed(response, "recruiters/dashboard.html")
@@ -205,7 +203,7 @@ class RecruiterSiteTestCase(TestCase):
             "GET request to /recruiters/jobs should return status code 302.")
 
         # A pretest to check that the recruiter is correctly defined in setUp
-        logged_in = c.login(username=self.recruiter.user.username, password="password")
+        # logged_in = c.login(username=self.recruiter.user.username, password="password")
 
         response = c.get('/recruiters/jobs')
         self.assertEqual(

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.forms.models import model_to_dict
 
 from applicants import forms as a_forms
@@ -6,7 +5,7 @@ from applicants import models as a_models
 from recruiters import forms as r_forms
 
 def not_none(*args):
-    return all([x is not None for x in args])
+    return all(x is not None for x in args)
 
 def check_stage_overlap(job_id, start_Date, end_Date, stage_name):
     job = a_models.Job.objects.get(pk=job_id)
@@ -195,7 +194,7 @@ def add_candidate_to_next_stage(candidate_id, current_stage_id, current_stage_na
             )
         print("added candidate to next stage")
 
-def drop_candidate_from_stage(job_id, candidate_id, stage_id, stage_name):
+def drop_candidate_from_stage(candidate_id, stage_id, stage_name):
     if stage_name is None or stage_id is None or candidate_id is None:
         raise ValueError()
     candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
@@ -330,21 +329,15 @@ def get_candidate_context(candidate_id):
     candidate = a_models.Candidate.objects.get(candidate_ID=candidate_id)
         
     # needs to change when I change the model
-    references = []
-    for ref in candidate.candidate_application.references.all():
-        references.append(
-            (
-                ref.platform_ID.name,
-                ref.profile_URL
-            )
-        )
-    
+    references = [
+        candidate.candidate_application.reference.profile_URL,
+    ]
     job = candidate.candidate_application.application_ID.job_ID
     
     skills = []
     for i,skill in enumerate(candidate.candidate_application.skills.all()):
         path = get_candidate_file_path(candidate_id, skill.certificate_File_Name)
-        form = (skill.skill_Name, path)
+        form = [("Skill", skill.skill_Name, False), ("Certificate", path, True)]
         skills.append(form)
     
     education_data = candidate.candidate_application.education
@@ -353,18 +346,33 @@ def get_candidate_context(candidate_id):
             education_data.ed_Level = verbose
             break
     education = a_forms.CandidateEducationForm(model_to_dict(education_data))
-
-    experience = a_forms.CandidateExperienceForm(model_to_dict(candidate.candidate_application.experience))
-    job_Slip = get_candidate_file_path(candidate_id, candidate.candidate_application.experience.job_Slip_File_Name)
     
-    photo = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.photo_File_Name)
-    resume = get_candidate_file_path(candidate_id, candidate.candidate_application.profile.resume_File_Name)
+    experience = a_forms.CandidateExperienceForm ( 
+        model_to_dict(candidate.candidate_application.experience)
+    )
+    job_Slip = get_candidate_file_path ( 
+        candidate_id, 
+        candidate.candidate_application.experience.job_Slip_File_Name
+    )
     
+    photo = get_candidate_file_path ( 
+        candidate_id, 
+        candidate.candidate_application.profile.photo_File_Name
+    )
+    resume = get_candidate_file_path ( 
+        candidate_id, 
+        candidate.candidate_application.profile.resume_File_Name
+    )
     return {
         'heading': candidate.first_Name + ' ' + candidate.last_Name,
         'job': job,
         'candidate': candidate,
-        'profile': a_forms.CandidateProfileForm(model_to_dict(candidate.candidate_application.profile)),
+        'profile': 
+            a_forms.CandidateProfileForm(
+                model_to_dict(
+                    candidate.candidate_application.profile
+                )
+            ),
         'references': references,
         'education': education,
         'experience': experience,

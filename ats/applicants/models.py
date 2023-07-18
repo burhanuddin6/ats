@@ -1,4 +1,4 @@
-import datetime, pytz
+import datetime, pytz #pylint: disable=#pylint: disable=too-many-lines
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -538,7 +538,7 @@ class Slot_Group(models.Model):
             day_times[obj.day] = obj
         # incase there was an invalid form submission
         print(temp)
-        if day_times == {}:
+        if not day_times:
             return
         while NUMBER > 0:
             day = DAYS_OF_WEEK[date.weekday()]
