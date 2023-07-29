@@ -1,13 +1,27 @@
-name: Django_Tests
-on: [push]
+name: Django Tests
 
-jobs: 
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
   test_project:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run Django unit tests
-      run: |
-        pip3 install -r requirements.txt
-        python3 ats/manage.py test applicants
-        python3 ats/manage.py test recruiters
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+      - name: Run Django unit tests
+        run: |
+          python3 ats/manage.py test applicants
+          python3 ats/manage.py test recruiters
