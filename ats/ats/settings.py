@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'polymorphic', # polymorphic models
     'ckeditor', # rich text box
     # my apps
-    'applicants',
-    'recruiters',
+    'apps.applicants.apps.ApplicantsConfig',
+    'apps.recruiters.apps.RecruitersConfig',
 ]
 
 MIDDLEWARE = [
@@ -124,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -142,7 +143,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 # EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'ba09ae@gmail.com'
-EMAIL_HOST_PASSWORD = 'mqcsjbhaxqmeejxu'#'hjkdatmjbjludyvl' #password associated with above email-id
+EMAIL_HOST_PASSWORD = 'xemkcdbkxaxxapbi'#'hjkdatmjbjludyvl' #password associated with above email-id
 DEFAULT_FROM_EMAIL = 'ba09ae@gmail.com'
 
 print(MEDIA_ROOT)
