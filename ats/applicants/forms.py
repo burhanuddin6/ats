@@ -153,8 +153,9 @@ class CandidateProfileForm(forms.ModelForm):
             print('filename',self.photo_File_Name)
             print('Hello')
             return photo
-        except:
-            raise forms.ValidationError("Image File type is not supported. Supported file types are:\n" + 
+        except Exception:
+            raise forms.ValidationError(
+                    "Image File type is not supported. Supported file types are:\n" + 
                         '\n'.join([str(x) for x in (
                             settings.IMAGE_FILE_TYPES
                 )]))
@@ -166,7 +167,9 @@ class CandidateProfileForm(forms.ModelForm):
             print('Hello')
             return resume
         except:
-            raise forms.ValidationError("Resume File type not supported. Supported file type(s) are .pdf")
+            raise forms.ValidationError(
+                "Resume File type not supported. Supported file type(s) are .pdf"
+            )
 
 class CandidateEducationForm(forms.ModelForm):
     class Meta:

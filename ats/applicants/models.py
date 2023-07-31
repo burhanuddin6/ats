@@ -1,4 +1,4 @@
-import datetime, pytz
+import datetime, pytz #pylint: disable=multiple-imports,too-many-lines
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -538,7 +538,7 @@ class Slot_Group(models.Model):
             day_times[obj.day] = obj
         # incase there was an invalid form submission
         print(temp)
-        if day_times == {}:
+        if not day_times:
             return
         while NUMBER > 0:
             day = DAYS_OF_WEEK[date.weekday()]
@@ -933,7 +933,8 @@ class Candidate_Interview(models.Model):
 #########################################################################p###############
 
 class Skill(models.Model):
-    """Candidate Skills Model
+    """
+    Candidate Skills Model
     Related to Candidate_Application model
     TODO: Make this model many to one with Candidate_Application
     Candidate_Application can have multiple skills
@@ -970,7 +971,8 @@ class OptionalSchemeURLValidator(URLValidator):
         super().__call__(value)
 
 class Platform(models.Model):
-    """Platforms defined by recruiters such as different profile websites such as LinkedIn, etc.
+    """
+    Platforms defined by recruiters such as different profile websites such as LinkedIn, etc.
     Related to Reference model
     One to many relationship with Reference model
 
@@ -1026,3 +1028,4 @@ class Reference(models.Model):
         db_index=True,
         related_name="references"
     )
+    

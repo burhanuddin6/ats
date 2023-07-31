@@ -16,15 +16,15 @@ def index(request):
         if "job_id" in request.session:
             del request.session['job_id']
         return HttpResponseRedirect(reverse('applicants:all_jobs'))
-    else: 
-        if a_helpers.candidate_has_application(candidate=request.user.candidate):
-            return HttpResponse("From index: You have already applied to a job.")
-        else:
-            if "job_id" in request.session: # divert to that job
-                return HttpResponseRedirect(reverse('applicants:job', 
-                                                    args=(request.session['job_id'],)))
-            else: # show all jobs
-                return HttpResponseRedirect(reverse('applicants:all_jobs'))
+    
+    if a_helpers.candidate_has_application(candidate=request.user.candidate):
+        return HttpResponse("From index: You have already applied to a job.")
+    
+    if "job_id" in request.session: # divert to that job
+        return HttpResponseRedirect(reverse('applicants:job', 
+                                            args=(request.session['job_id'],)))
+    # show all jobs
+    return HttpResponseRedirect(reverse('applicants:all_jobs'))
     
 def login_view(request):
     if request.method == "POST":
@@ -34,11 +34,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse('applicants:index'))
-        else:
-            return render(request, 'applicants/login.html', {
-                'login_form': a_forms.LoginForm(),
-                'message': "Invalid credentials"
-            })
+        
+        return render(request, 'applicants/login.html', {
+            'login_form': a_forms.LoginForm(),
+            'message': "Invalid credentials"
+        })
     messages.info(request, "Please login")
     if request.method == "GET":
         return render(request, 'applicants/login.html', {
@@ -64,14 +64,14 @@ def signup(request):
                     candidate_form.cleaned_data['email'], 
                     request.session['verification_code'])
                 return HttpResponseRedirect(reverse('applicants:verify'))
-            else:
-                messages.error(request, "Invalid form")
-                return render(request, 'applicants/signup.html', {
-                    'candidate_form': candidate_form
-                })
-        else:
-            # There is no other form
-            raise a_helpers.InvalidFormException("There is no other form")
+            
+            messages.error(request, "Invalid form")
+            return render(request, 'applicants/signup.html', {
+                'candidate_form': candidate_form
+            })
+                
+        # There is no other form
+        raise a_helpers.InvalidFormException("There is no other form")
         
     # request method is GET or the above failed
     if request.method == "GET":
@@ -138,9 +138,10 @@ def apply_for_job(request, job_id):
         # check if user is a candidate
         if not a_helpers.is_candidate(request.user):
             return HttpResponseRedirect(reverse('applicants:signup'))
-        else:
-            return HttpResponseRedirect(reverse('applicants:application', 
-                                                    args=(request.user.candidate.candidate_ID,)))
+        
+        return HttpResponseRedirect(reverse('applicants:application', 
+                args=(request.user.candidate.candidate_ID,))
+        )
 
     if request.method == "POST":
         raise NotImplementedError("method POST NOT implemented for view: apply_for_job")
@@ -148,14 +149,18 @@ def apply_for_job(request, job_id):
 
 def application(request, applicant_id):
     if request.method == "POST":
-        success, forms_dict = a_helpers.save_application_data(request, applicant_id, request.session['job_id'])
-        if success:
+        saved_successfully, forms_dict = a_helpers.save_application_data (
+            request, 
+            applicant_id, 
+            request.session['job_id']
+        )
+        if saved_successfully:
             return render(request, 'applicants/success.html')
-        else:
-            forms_dict['applicant_id'] = applicant_id
-            forms_dict['applicant'] = a_models.Candidate.objects.get(pk=applicant_id)
-            forms_dict['user'] = request.user
-            return render(request, 'applicants/application_ai_gen.html', forms_dict)
+        
+        forms_dict['applicant_id'] = applicant_id
+        forms_dict['applicant'] = a_models.Candidate.objects.get(pk=applicant_id)
+        forms_dict['user'] = request.user
+        return render(request, 'applicants/application_ai_gen.html', forms_dict)
     if request.method == "GET":
         for form in a_forms.CandidateReferencesFormSet(
                 queryset=a_models.Reference.objects.none(),
