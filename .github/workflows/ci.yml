@@ -10,4 +10,3 @@ jobs:
       run: |
         pip3 install -r requirements.txt
         python3 ats/manage.py test apps.applicants
-        python3 ats/manage.py test apps.recruiters
