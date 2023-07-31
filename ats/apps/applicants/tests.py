@@ -9,7 +9,7 @@ from django.test import TestCase, Client
 # import QuerySet
 from django.db.models.query import QuerySet
 
-from apps.applicants import models as a_models, helpers as a_helpers, forms as a_forms
+from apps.applicants import models as a_models, helpers as a_helpers
 from apps.applicants.helpers import create_candidate
 from apps.recruiters import forms as r_forms
 
