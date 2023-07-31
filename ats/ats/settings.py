@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     'polymorphic', # polymorphic models
     'ckeditor', # rich text box
     # my apps
-    'applicants',
-    'recruiters',
+    'apps.applicants',
+    'apps.recruiters',
 ]
 
 MIDDLEWARE = [
