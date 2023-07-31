@@ -1,0 +1,131 @@
+{% extends "recruiters/layout.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% load mytags %}
+
+{% block head %}
+    <style>
+        body{
+            background-color: white;
+        }
+        .form-wrapper{
+            margin-bottom: 50px;
+            /* bottom border */
+            border-bottom: 1px solid black;
+            padding: 50px 20px;
+        }
+        .row.block{
+            margin: 20px 20px;
+        }
+        h3{
+            margin-bottom: 50px;
+        }
+        .label{
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<!-- A column for personal information and picture -->
+<div class="container">
+    
+    <div class="container form-wrapper">
+        <h3>Application Information</h3>
+        <div class="row block">
+            <div class="col-md-4 label">
+                <p>Job Applied</p>
+            </div>
+            <div class="col-md-8">
+                {{ job.title }}
+            </div>
+
+        </div>
+    </div>
+    <div class="container form-wrapper">
+        <h3>Candidate Information</h3>
+        {% for field in profile %}
+            <div class="row block">
+                <div class="col-md-4 label">
+                    {{ field.label }}
+                </div>
+                <div class="col-md-8">
+                        {% if field.name == "photo"%}
+                            <a href="{% get_media_prefix %}{{ photo }}">File</a>
+                        {% elif field.name == "resume" %}
+                            <a href="{% get_media_prefix %}{{ resume }}">File</a>
+                        {% else %}
+                            {{ field.data }}
+                        {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="container form-wrapper">
+        <h3>References</h3>
+        {% for ref_platform, ref_link in references %}
+            <div class="row block">
+                <div class="col-md-4 label">
+                    {{ ref_platform }}
+                </div>
+                <div class="col-md-8">
+                    <a href="{{ref_link}}">Profile</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container form-wrapper">
+        <h3>Work Experience</h3>
+        {% for field in experience %}
+            <div class="row block">
+                <div class="col-md-4 label">
+                    {{ field.label }}
+                </div>
+                {% if field.name == "job_Slip" %}
+                    <div class="col-md-8">
+                        <a href="{% get_media_prefix %}{{ job_Slip }}">Job Slip</a>
+                    </div>
+                {% else %}
+                    <div class="col-md-8">
+                        {{ field.data }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container form-wrapper">
+        <h3>Education</h3>
+        {% for field in education %}
+            <div class="row block">
+                <div class="col-md-4 label">
+                    {{ field.label }}
+                </div>
+                <div class="col-md-8">
+                    {{ field.data }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container form-wrapper">
+        <h3>Skills</h3>
+        <div class="container">
+            {% for name, cert_path in skills %}
+                <div class="row block">
+                    <div class="col-md-4 label">
+                        {{ name }}
+                    </div>
+                    <div class="col-md-8">
+                        <a href="{% get_media_prefix %}{{ cert_path }}">Certificate</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

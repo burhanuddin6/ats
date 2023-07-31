@@ -1,0 +1,56 @@
+.search-icon {
+    position: relative;
+    width: 24px;
+    height: 25px;
+  }
+  .search-your-team {
+    position: relative;
+    line-height: 20px;
+    display: inline-block;
+    width: 90%;
+    flex-shrink: 0;
+    /* remove input box borders and shades */
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+    font-size: inherit;
+  }
+  .search-box {
+    position: relative;
+    border-radius: 12px;
+    background-color: #fff;
+    border: 1px solid var(--t1);
+    box-sizing: border-box;
+    width: 500px;
+    height: 50px;
+    overflow: hidden;
+    padding: var(--padding-5xl) 0 var(--padding-5xl) var(--padding-5xl);
+    transition: all 0.3s ease-in-out;
+    /* vertically align children */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: left;
+    font-size: 20px;
+    color: var(--fadetext);
+    /* vertically align children */
+    display: flex;
+  
+  }
+
+  .search-box:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.267);
+  }
+
+  #search_results{
+    background-color: whitesmoke;
+    margin-right:20px;
+    border: 1px solid var(--t1);
+    height: calc(60vh);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 50px;
+  }
+  

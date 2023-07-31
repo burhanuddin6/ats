@@ -1,0 +1,61 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" integrity="sha384-PJsj/BTMqILvmcej7ulplguok8ag4xFTPryRq8xevL7eBYSmpXKcbNVuy+P0RMgq" crossorigin="anonymous">
+    <link href="{% static 'recruiters/styles.css' %}" rel="stylesheet">
+    <link href="{% static 'applicants/css/input-field.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    
+    <style>
+        .btn{
+            background-color: var(--primary-color);
+            width: fit-content;
+            color:white;
+        }
+        .btn:hover{
+            color: black;
+        }
+        .title{
+            gap: 20px;
+            display: flex;
+            align-items: left;
+            flex-direction: column;
+            margin: 50px 0px;
+        }
+        body{
+            background-color: white;
+            background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Frecruitment-process&psig=AOvVaw2dZ9gSbydAfE0Z87yMNZ8K&ust=1689716984217000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCLCXrrfcloADFQAAAAAdAAAAABAE');
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="padding:100px;">
+        <div class="row">
+            <div class="col-md-6 title">
+                <img src="https://jbs.live/wp-content/uploads/2022/01/jbs_logo-1.webp" alt="Logo" width="70" height="60" class="d-inline-block align-text-top">
+                <h2>Welcome to JBS Catalyst</h2>
+            </div>
+        </div>
+        <form action="{% url 'recruiters:login' %}" method="POST" class="row">
+            {% csrf_token %}
+            {% for field in login_form %}
+                <div class="col-md-12">
+                    <div class="input-field-parent">
+                        <div class="input-field-label">{{ field.label }}</div>
+                        {{ field|add_class:"input-field" }}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="col-md-12">
+                <input type="submit" value="Login" class="btn">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

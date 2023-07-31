@@ -1,0 +1,125 @@
+{% load static %}
+{% load mytags %}
+
+<div class="container">
+    {% if active_stage_name|lower == "interview" %}
+    {% endif %}
+    <div class="row undecided-candidates">
+        {% for candidate in undecided_candidates %}
+            <div class="col-md-4 candidate-box">
+                <div class="rectangle-parent" id="groupContainer">    
+                    <a href="{% url 'recruiters:candidate' candidate.candidate_ID %}">
+                        <div class="candidate-top">
+                            <div class="ellipse-icon">
+                                <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+                            </div>
+                            <div class="name">
+                                <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
+                                <div class="applied-on">Appplied On 2nd June</div>
+                            </div>
+                        </div>
+                    </a>    
+                    
+                    <div class="above-line">
+                        {% if active_stage_name|lower == "interview" %}    
+                            <div>
+                                Interview scheduled on: {% call_method candidate "get_interview_datetime" active_stage_id %}
+                            </div>
+                            <button class="btn schedule fetch" data-action-next="{% url 'recruiters:schedule_candidate_interview' candidate.candidate_ID active_stage_id %}">
+                                {% call_method candidate "get_interview_schedule_opt" active_stage_id %}
+                            </button>
+                            {% call_method candidate "is_scheduled" active_stage_id as is_scheduled %}
+                            {% if is_scheduled %}
+                                <div>
+                                    <button class="btn schedule fetch" data-action-next="{% url 'recruiters:delete_candidate_interview' candidate.candidate_ID active_stage_id %}">
+                                        Cancel Interview
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="line"></div>
+                    
+                    <div class="below-line">
+                        {% if active_stage_name|lower == "interview" %}
+                        {% elif active_stage_name|lower == "test" %}
+                        {% elif active_stage_name|lower == "onboarding" %}
+                        {% else %}
+                        {% endif %}
+                        <button class="btn approve fetch" data-action-next="{% url 'recruiters:approve_candidate' job.id %}?stage_id={{active_stage_id}}&stage_name={{active_stage_name}}&candidate_id={{candidate.candidate_ID}}">
+                            Approve
+                        </button>
+                        <button class="btn reject fetch" data-action-next="{% url 'recruiters:reject_candidate' job.id %}?stage_id={{active_stage_id}}&stage_name={{active_stage_name}}&candidate_id={{candidate.candidate_ID}}">
+                            Reject
+                        </button>    
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row accepted-candidates">
+        {% for candidate in accepted_candidates %}
+            <div class="col-md-4 candidate-box">
+                <div class="rectangle-parent" id="groupContainer">        
+                    <a href="{% url 'recruiters:candidate' candidate.candidate_ID %}">
+                        <div class="candidate-top">
+                            <div class="ellipse-icon">
+                                <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+                            </div>
+                            <div class="name">
+                                <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
+                                <div class="applied-on">Appplied On 2nd June</div>
+                            </div>
+                            <div class="icon dots">
+                                <img alt="" src="{% static 'recruiters/icon-h-dots.svg' %}" />
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <div class="above-line">
+                    </div>
+                    
+                    <div class="line"></div>
+                    
+                    <div class="below-line">
+                        Approved    
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row rejected-candidates">
+        {% for candidate in rejected_candidates %}
+            <div class="col-md-4 candidate-box">
+                <div class="rectangle-parent" id="groupContainer">        
+                    <a href="{% url 'recruiters:candidate' candidate.candidate_ID %}">
+                        <div class="candidate-top">
+                            <div class="ellipse-icon">
+                                <img class="image" alt="" src="{% get_candidate_img_src candidate.candidate_ID %}" />
+                            </div>
+                            <div class="name">
+                                <div>{{ candidate.first_Name }} {{ candidate.last_Name }}</div>
+                                <div class="applied-on">Appplied On 2nd June</div>
+                            </div>
+                            <div class="icon dots">
+                                <img alt="" src="{% static 'recruiters/icon-h-dots.svg' %}" />
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <div class="above-line">
+                    </div>
+                    
+                    <div class="line"></div>
+                    
+                    <div class="below-line">
+                        Rejected    
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
