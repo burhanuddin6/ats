@@ -1,0 +1,70 @@
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    font-family: Arial, Helvetica, sans-serif;
+    width:60%;
+  }
+  
+  /* The Close Button */
+  #modal-close {
+    color: #aaaaaa;
+    font-size: 28px;
+    font-weight: bold;
+    /* position on right */
+    float: right;
+    /* center vertically */
+    line-height: 0.5;
+
+  }
+  
+  #modal-close:hover,
+  #modal-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+.input-field-parent.to{
+    left: 5%;
+}
+
+.input-field-parent.subject{
+    width: 90%;
+    left: 5%;
+    height: 80px;
+}
+.input-field.subject{
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+}
+.input-field-parent.message{
+    width: 90%;
+    left: 5%;   
+    height: 400px;
+}
+.input-field.message{
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+}
+
+.send-email{
+    position: relative;
+    float: right;
+}
