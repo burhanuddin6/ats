@@ -212,7 +212,7 @@ def create_stage(request, job_id, stage_name):
                 form.created_By = request.user.recruiter
                 form.save()
                 r_helpers.add_approved_cand_from_prev_stage(job_id)
-                return HttpResponseRedirect(reverse('recruiters:job_obj', kwargs={'job_id': job_id}))   
+                return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))   
         
         if not no_overlaps:
             messages.error(request, 
@@ -271,7 +271,7 @@ def create_interview_slots(request, job_id, stage_id):
                     form.save()
             # now create interview slots.
             slot_group.create_interview_slots()
-            return HttpResponseRedirect(reverse('recruiters:job_obj', kwargs={'job_id': job_id}))
+            return HttpResponseRedirect(reverse('recruiters:job', kwargs={'job_id': job_id}))
         
         messages.error(request, "Error creating interview slots. Invalid data")
         return render(request, 'recruiters/create_interview_slots.html', {
