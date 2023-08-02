@@ -51,7 +51,7 @@ class SlotGroupTestCase(TestCase):
             overview='test overview',
             responsibilities='test responsibilities',
             qualifications='test qualifications',
-            salary_Range=a_models.Job._100,
+            salary_Range=a_models.Job.SALARY_RANGE_CHOICES[3],
             work_Site=a_models.Job.IN_OFFICE,
             work_Type=a_models.Job.FULL_TIME,
             open=True,
@@ -72,7 +72,7 @@ class SlotGroupTestCase(TestCase):
         message = "Job object was not created successfully."
         self.assertEqual(job.title, 'test title', message)
         self.assertEqual(job.overview, 'test overview', message)
-        self.assertEqual(job.salary_Range, a_models.Job._100, message)
+        self.assertEqual(job.salary_Range, str(a_models.Job.SALARY_RANGE_CHOICES[3]), message)
         self.assertEqual(job.work_Site, a_models.Job.IN_OFFICE, message)
         self.assertEqual(job.work_Type, a_models.Job.FULL_TIME, message)
         self.assertEqual(job.open, True, message)

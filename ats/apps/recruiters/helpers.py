@@ -87,7 +87,7 @@ def get_job_context(job_id, stage_id, stage_name):
             )
         
     else:
-        raise Exception("Invalid stage type")
+        raise ValueError("Invalid stage type")
 
     return {
         'heading': job.title,

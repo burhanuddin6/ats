@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 from django.db import models
 
 from ckeditor.fields import RichTextField

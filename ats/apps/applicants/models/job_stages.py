@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 import datetime
 
 from django.db import models
