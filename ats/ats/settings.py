@@ -150,7 +150,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 # EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'ba09ae@gmail.com'
-EMAIL_HOST_PASSWORD = 'mqcsjbhaxqmeejxu'#'hjkdatmjbjludyvl' #password associated with above email-id
+EMAIL_HOST_PASSWORD = 'yxwcltjfrydkoioc'#'hjkdatmjbjludyvl' #password associated with above email-id
 DEFAULT_FROM_EMAIL = 'ba09ae@gmail.com'
 
 print(MEDIA_ROOT)
