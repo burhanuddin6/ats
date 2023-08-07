@@ -11,6 +11,7 @@ def check_file_name_size(file_obj, size_limit, rename=False, rename_to=''):
     ext = file_name[-1]
     if file_obj.size > size_limit:
         raise ValueError("File exceeds size limit")
+    
     if ext in settings.IMAGE_FILE_TYPES or ext in settings.DOCUMENT_FILE_TYPES:
         if rename:
             file_obj.name = rename_to + '.' + ext
@@ -153,7 +154,8 @@ class CandidateProfileForm(forms.ModelForm):
             print('filename',self.photo_File_Name)
             print('Hello')
             return photo
-        except Exception:
+        except Exception as e:
+            print(e)
             raise forms.ValidationError(
                     "Image File type is not supported. Supported file types are:\n" + 
                         '\n'.join([str(x) for x in (
@@ -166,7 +168,8 @@ class CandidateProfileForm(forms.ModelForm):
             self.resume_File_Name = resume.name
             print('Hello')
             return resume
-        except:
+        except Exception as e:
+            print(e)
             raise forms.ValidationError(
                 "Resume File type not supported. Supported file type(s) are .pdf"
             )
